@@ -18,7 +18,6 @@ export default function SetupPage() {
   const [question, setQuestion] = useState("");
   const [cycles, setCycles] = useState(2);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
-  const [crownedModel, setCrownedModel] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
@@ -27,21 +26,11 @@ export default function SetupPage() {
 
   const toggleModel = (id: string) => {
     if (selectedModels.includes(id)) {
-      const nextModels = selectedModels.filter((modelId) => modelId !== id);
-      setSelectedModels(nextModels);
-
-      if (crownedModel === id) {
-        setCrownedModel(nextModels[0] ?? "");
-      }
-
+      setSelectedModels(selectedModels.filter((modelId) => modelId !== id));
       return;
     }
 
     setSelectedModels((prev) => [...prev, id]);
-
-    if (!crownedModel) {
-      setCrownedModel(id);
-    }
   };
 
   const handleStart = async () => {
@@ -49,7 +38,7 @@ export default function SetupPage() {
       return;
     }
 
-    const resolvedCrown = crownedModel || selectedModels[0];
+    const resolvedCrown = selectedModels[0];
     let slotIndex = 0;
 
     const agents = selectedModels.map((modelId) => {
@@ -128,7 +117,7 @@ export default function SetupPage() {
             ) : (
               <div className="flex min-h-[160px] items-center gap-4 overflow-x-auto pt-6 pr-2 pb-4 pl-5">
                 {orderedModels.map((model, index) => {
-                  const isCrowned = model.id === crownedModel;
+                  const isCrowned = index === 0;
                   const orderNumber = index + 1;
 
                   return (
@@ -162,16 +151,6 @@ export default function SetupPage() {
                         <div className="mt-1 w-full truncate px-1 text-center text-[11px] text-muted-foreground">
                           {model.role}
                         </div>
-
-                        {!isCrowned && (
-                          <button
-                            onClick={() => setCrownedModel(model.id)}
-                            className="mt-3 rounded-md px-2 py-1 text-[10px] font-medium text-[#002D72] opacity-0 transition-opacity group-hover:bg-[#002D72]/10 group-hover:opacity-100"
-                            type="button"
-                          >
-                            Make Crowned
-                          </button>
-                        )}
                       </div>
 
                       {index < orderedModels.length - 1 && (
