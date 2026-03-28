@@ -450,10 +450,10 @@ export default function CouncilRunPage({
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#f5f5f5]">
-        <div className="flex items-center gap-3 rounded-xl border border-[#d9d9d9] bg-white px-5 py-4 shadow-sm">
+      <div className="flex h-full w-full items-center justify-center bg-background transition-colors">
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-colors">
           <Loader2 className="h-5 w-5 animate-spin text-[#002D72]" />
-          <span className="text-sm font-medium text-[#1e1e1e]">
+          <span className="text-sm font-medium text-foreground">
             Loading council...
           </span>
         </div>
@@ -463,12 +463,12 @@ export default function CouncilRunPage({
 
   if (!councilData || orderedModels.length === 0 || councilData.rounds.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#f5f5f5] p-6">
-        <div className="w-full max-w-md rounded-2xl border border-[#d9d9d9] bg-white p-6 text-center shadow-sm">
-          <h2 className="text-xl font-bold text-[#1e1e1e]">
+      <div className="flex h-full w-full items-center justify-center bg-background p-6 transition-colors">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-center shadow-sm transition-colors">
+          <h2 className="text-xl font-bold text-foreground">
             Council unavailable
           </h2>
-          <p className="mt-2 text-sm text-[#757575]">
+          <p className="mt-2 text-sm text-muted-foreground">
             {loadError ?? "This council could not be loaded or is missing its setup data."}
           </p>
           <div className="mt-6 flex justify-center">
@@ -495,18 +495,18 @@ export default function CouncilRunPage({
   });
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f5f5f5] lg:flex-row">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-background transition-colors lg:flex-row">
       <div className="flex h-full flex-1 flex-col items-center overflow-hidden px-4 py-4 lg:px-6 lg:py-8">
-        <div className="z-10 mb-8 flex w-full max-w-4xl items-center justify-between rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-sm">
+        <div className="z-10 mb-8 flex w-full max-w-4xl items-center justify-between rounded-xl border border-border bg-card p-4 shadow-sm transition-colors">
           <div>
-            <h2 className="text-xl font-bold text-[#1e1e1e]">
+            <h2 className="text-xl font-bold text-foreground">
               {isFinished ? "Council Output Complete" : "Council in Progress"}
             </h2>
             <p
-              className="mt-1 line-clamp-1 text-sm text-[#757575]"
+              className="mt-1 line-clamp-1 text-sm text-muted-foreground"
               title={question}
             >
-              <span className="font-semibold text-[#1e1e1e]">Topic:</span>{" "}
+              <span className="font-semibold text-foreground">Topic:</span>{" "}
               {question}
             </p>
           </div>
@@ -530,7 +530,7 @@ export default function CouncilRunPage({
                 </span>
               )}
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[#e5e5e5]">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-accent transition-colors">
               <div
                 className={cn(
                   "h-full rounded-full transition-all duration-500 ease-out",
@@ -561,7 +561,7 @@ export default function CouncilRunPage({
           </div>
         )}
 
-        <div className="relative flex min-h-[240px] w-full max-w-5xl flex-1 items-center justify-center overflow-hidden rounded-3xl border-4 border-white bg-gradient-to-b from-[#007749] to-[#002D72] p-4 shadow-xl lg:p-8">
+        <div className="relative flex min-h-[240px] w-full max-w-5xl flex-1 items-center justify-center overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b from-[#007749] to-[#002D72] p-4 shadow-xl transition-colors lg:p-8">
           <div className="absolute inset-0 bg-black/10" />
 
           <div className="z-10 flex w-full items-center justify-center gap-6">
@@ -575,7 +575,7 @@ export default function CouncilRunPage({
                   <div className="group relative flex flex-col items-center">
                     <div
                       className={cn(
-                        "relative flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-xl transition-all duration-500",
+                        "relative flex h-24 w-24 items-center justify-center rounded-full bg-card shadow-xl transition-all duration-500",
                         isActive
                           ? "scale-110 ring-4 ring-white shadow-[0_0_30px_rgba(255,255,255,0.5)]"
                           : isDone
@@ -597,7 +597,7 @@ export default function CouncilRunPage({
                       />
 
                       {isActive && (
-                        <div className="absolute -bottom-3 flex items-center gap-1 rounded-full bg-white px-2 py-1 text-[10px] font-bold text-[#002D72] shadow-md">
+                        <div className="absolute -bottom-3 flex items-center gap-1 rounded-full bg-card px-2 py-1 text-[10px] font-bold text-[#002D72] shadow-md transition-colors">
                           <Loader2 className="h-3 w-3 animate-spin" />
                           Thinking
                         </div>
@@ -666,9 +666,9 @@ export default function CouncilRunPage({
         </div>
       </div>
 
-      <div className="z-10 flex h-[40%] w-full shrink-0 flex-col border-t border-[#d9d9d9] bg-[#fcfcfc] shadow-[-4px_0_15px_rgba(0,0,0,0.02)] lg:h-full lg:w-[380px] lg:border-t-0 lg:border-l">
-        <div className="sticky top-0 z-10 border-b border-[#d9d9d9] bg-white p-4">
-          <h3 className="flex items-center gap-2 font-semibold text-[#1e1e1e]">
+      <div className="z-10 flex h-[40%] w-full shrink-0 flex-col border-t border-border bg-card shadow-[-4px_0_15px_rgba(0,0,0,0.02)] transition-colors lg:h-full lg:w-[380px] lg:border-t-0 lg:border-l">
+        <div className="sticky top-0 z-10 border-b border-border bg-card p-4 transition-colors">
+          <h3 className="flex items-center gap-2 font-semibold text-foreground">
             Council Log
             {isFinished && (
               <span className="rounded-full bg-[#007749]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#007749]">
@@ -684,12 +684,12 @@ export default function CouncilRunPage({
               key={`cycle-${cycleGroup.cycleNum}`}
               className="relative flex flex-col gap-4"
             >
-              <div className="sticky top-0 z-10 flex items-center gap-2 bg-[#fcfcfc]/90 py-1 backdrop-blur-sm">
-                <div className="h-px flex-1 bg-[#d9d9d9]" />
-                <span className="rounded-full bg-[#f0f0f0] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#757575]">
+              <div className="sticky top-0 z-10 flex items-center gap-2 bg-card/90 py-1 backdrop-blur-sm">
+                <div className="h-px flex-1 bg-border" />
+                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors">
                   Cycle {cycleGroup.cycleNum}
                 </span>
-                <div className="h-px flex-1 bg-[#d9d9d9]" />
+                <div className="h-px flex-1 bg-border" />
               </div>
 
               {cycleGroup.entries.map((log) => (
@@ -703,23 +703,23 @@ export default function CouncilRunPage({
                       alt={log.modelName}
                       width={32}
                       height={32}
-                      className="h-8 w-8 rounded-full border border-[#d9d9d9] bg-white object-cover"
+                      className="h-8 w-8 rounded-full border border-border bg-card object-cover transition-colors"
                     />
                     {log.cycle === currentCycle && log.step < orderedModels.length && (
-                      <div className="mt-2 mb-[-16px] h-full w-0.5 bg-[#d9d9d9]" />
+                      <div className="mt-2 mb-[-16px] h-full w-0.5 bg-border" />
                     )}
                   </div>
                   <div className="flex-1 pb-2">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#1e1e1e]">
+                      <span className="text-sm font-semibold text-foreground">
                         {log.modelName}
                       </span>
-                      <span className="rounded bg-[#e5e5e5] px-1.5 py-0.5 text-[10px] text-nowrap text-[#757575]">
+                      <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] text-nowrap text-muted-foreground transition-colors">
                         {log.role}
                       </span>
                     </div>
-                    <div className="relative rounded-lg rounded-tl-none border border-[#e5e5e5] bg-white p-3 text-sm leading-relaxed text-[#4a4a4a] shadow-sm">
-                      <div className="absolute top-0 -left-1.5 h-3 w-3 rotate-[-45deg] rounded-tl-sm border-t border-l border-[#e5e5e5] bg-white" />
+                    <div className="relative rounded-lg rounded-tl-none border border-border bg-card p-3 text-sm leading-relaxed text-foreground shadow-sm transition-colors">
+                      <div className="absolute top-0 -left-1.5 h-3 w-3 rotate-[-45deg] rounded-tl-sm border-t border-l border-border bg-card transition-colors" />
                       <span className="relative z-10">{log.content}</span>
                     </div>
                   </div>
@@ -741,15 +741,15 @@ export default function CouncilRunPage({
               </div>
               <div className="flex-1">
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="text-sm font-semibold text-[#1e1e1e]">
+                  <span className="text-sm font-semibold text-foreground">
                     {orderedModels[currentStepIndex].name}
                   </span>
                   <Loader2 className="h-3 w-3 animate-spin text-[#002D72]" />
                 </div>
-                <div className="flex h-10 w-16 items-center justify-center gap-1 rounded-lg rounded-tl-none border border-[#e5e5e5] bg-white p-3 text-sm">
-                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#b3b3b3] [animation-delay:-0.3s]" />
-                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#b3b3b3] [animation-delay:-0.15s]" />
-                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#b3b3b3]" />
+                <div className="flex h-10 w-16 items-center justify-center gap-1 rounded-lg rounded-tl-none border border-border bg-card p-3 text-sm transition-colors">
+                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
+                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
+                  <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground" />
                 </div>
               </div>
             </div>
@@ -761,10 +761,10 @@ export default function CouncilRunPage({
 
       {showModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm opacity-0 animate-[fadeIn_0.2s_ease-out_forwards]">
-          <div className="flex w-full max-w-2xl scale-95 flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-[popIn_0.3s_ease-out_forwards]">
-            <div className="flex items-start justify-between border-b border-[#f0f0f0] bg-gradient-to-r from-white to-[#f5fcf8] p-6">
+          <div className="flex w-full max-w-2xl scale-95 flex-col overflow-hidden rounded-2xl bg-card shadow-2xl transition-colors animate-[popIn_0.3s_ease-out_forwards]">
+            <div className="flex items-start justify-between border-b border-border bg-gradient-to-r from-card to-accent p-6 transition-colors">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[#1e1e1e]">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
                   Final Council Response
                 </h2>
                 <div className="mt-2 flex items-center gap-2">
@@ -776,7 +776,7 @@ export default function CouncilRunPage({
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 text-[#757575] transition-colors hover:text-[#1e1e1e]"
+                className="p-1 text-muted-foreground transition-colors hover:text-foreground"
                 type="button"
               >
                 <svg
@@ -796,37 +796,37 @@ export default function CouncilRunPage({
             </div>
 
             <div className="p-8 pb-10">
-              <div className="text-lg leading-relaxed font-medium text-[#1e1e1e]">
+              <div className="text-lg leading-relaxed font-medium text-foreground">
                 {finalSummary}
               </div>
 
-              <div className="mt-8 border-t border-[#f0f0f0] pt-6">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#757575]">
+              <div className="mt-8 border-t border-border pt-6">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Council Metadata
                 </p>
                 <div className="grid grid-cols-2 gap-y-4 text-sm">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Started by:</span>
-                    <span className="flex items-center gap-1 font-medium text-[#1e1e1e]">
+                    <span className="text-muted-foreground">Started by:</span>
+                    <span className="flex items-center gap-1 font-medium text-foreground">
                       <Crown className="h-3 w-3 text-[#F59E0B]" />{" "}
                       {orderedModels[0]?.name} ({orderedModels[0]?.role})
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Total Models:</span>
-                    <span className="font-medium text-[#1e1e1e]">
+                    <span className="text-muted-foreground">Total Models:</span>
+                    <span className="font-medium text-foreground">
                       {orderedModels.length} participants
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Sequence:</span>
-                    <span className="font-medium text-[#1e1e1e]">
+                    <span className="text-muted-foreground">Sequence:</span>
+                    <span className="font-medium text-foreground">
                       {orderedModels.map((model) => model.name).join(" → ")}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Process Info:</span>
-                    <span className="font-medium text-[#1e1e1e]">
+                    <span className="text-muted-foreground">Process Info:</span>
+                    <span className="font-medium text-foreground">
                       Generated after sequential review by {orderedModels.length}{" "}
                       models across {totalCycles} cycles.
                     </span>
@@ -835,7 +835,7 @@ export default function CouncilRunPage({
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 border-t border-[#f0f0f0] bg-[#fcfcfc] p-4">
+            <div className="flex justify-end gap-3 border-t border-border bg-card p-4 transition-colors">
               <Button variant="outline" onClick={() => setShowModal(false)}>
                 View Saved Run
               </Button>

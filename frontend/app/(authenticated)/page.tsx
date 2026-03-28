@@ -4,8 +4,8 @@ import { Button } from "@/components/Button";
 
 export default function DashboardPage() {
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-[#f5f5f5] lg:flex-row">
-      <div className="relative m-4 flex flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#d9d9d9] bg-white p-8 shadow-sm">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-background transition-colors lg:flex-row">
+      <div className="relative m-4 flex flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm transition-colors">
         <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-bl-full bg-gradient-to-bl from-[#007749]/5 to-transparent" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-tr-full bg-gradient-to-tr from-[#002D72]/5 to-transparent" />
 
@@ -15,10 +15,10 @@ export default function DashboardPage() {
               C
             </div>
           </div>
-          <h2 className="mb-2 text-2xl font-bold text-[#1e1e1e]">
+          <h2 className="mb-2 text-2xl font-bold text-card-foreground">
             Welcome to The Council
           </h2>
-          <p className="mb-8 text-[#757575]">
+          <p className="mb-8 text-muted-foreground">
             Start a new session to submit a question and watch multiple AI
             models sequentially reason through it to find the best answer.
           </p>
@@ -31,9 +31,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="flex h-[30%] w-full shrink-0 flex-col items-center justify-center border-t border-[#d9d9d9] bg-[#fcfcfc] p-6 lg:h-full lg:w-[320px] lg:border-t-0 lg:border-l">
-        <div className="text-center text-[#b3b3b3]">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[#e5e5e5] bg-[#f0f0f0]">
+      <div className="flex h-[30%] w-full shrink-0 flex-col items-center justify-center border-t border-border bg-card p-6 transition-colors lg:h-full lg:w-[320px] lg:border-t-0 lg:border-l">
+        <div className="text-center text-muted-foreground">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-accent transition-colors">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"

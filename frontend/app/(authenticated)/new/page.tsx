@@ -96,32 +96,32 @@ export default function SetupPage() {
     .filter((model): model is (typeof AVAILABLE_MODELS)[number] => Boolean(model));
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-[#f5f5f5] lg:flex-row">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-background transition-colors lg:flex-row">
       <div className="flex flex-1 flex-col items-center overflow-y-auto px-4 py-8 lg:px-8 lg:py-12">
         <div className="flex w-full max-w-3xl flex-col gap-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#1e1e1e]">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Configure Council
             </h1>
-            <p className="mt-2 text-[#757575]">
+            <p className="mt-2 text-muted-foreground">
               Select the models, set the order, and define the topic for
               discussion.
             </p>
           </div>
 
-          <div className="flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6 shadow-sm transition-colors">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[#1e1e1e]">
+              <h2 className="text-lg font-semibold text-foreground">
                 Council Sequence
               </h2>
-              <div className="rounded bg-[#f5f5f5] px-2 py-1 text-xs font-medium uppercase tracking-wider text-[#757575]">
+              <div className="rounded bg-accent px-2 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors">
                 Relay Order
               </div>
             </div>
 
             {orderedModels.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#e5e5e5] bg-[#fafafa] px-4 py-12">
-                <p className="text-sm font-medium text-[#757575]">
+              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background px-4 py-12 transition-colors">
+                <p className="text-sm font-medium text-muted-foreground">
                   Select at least 3 LLMs to build your council sequence.
                 </p>
               </div>
@@ -138,10 +138,10 @@ export default function SetupPage() {
                           "group relative flex w-36 flex-col items-center rounded-xl border-2 p-4 transition-all",
                           isCrowned
                             ? "border-[#002D72] bg-[#002D72]/5 shadow-sm"
-                            : "border-[#d9d9d9] bg-white hover:border-[#b3b3b3]",
+                            : "border-border bg-card hover:border-muted-foreground/40",
                         )}
                       >
-                        <div className="absolute -top-3 -left-3 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#1e1e1e] text-xs font-bold text-white shadow-sm">
+                        <div className="absolute -top-3 -left-3 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background shadow-sm transition-colors">
                           {orderNumber}
                         </div>
                         {isCrowned && (
@@ -156,10 +156,10 @@ export default function SetupPage() {
                           height={48}
                           className="mb-3 h-12 w-12 rounded-full border border-black/5 shadow-sm"
                         />
-                        <div className="w-full truncate text-center text-sm font-bold text-[#1e1e1e]">
+                        <div className="w-full truncate text-center text-sm font-bold text-foreground">
                           {model.name}
                         </div>
-                        <div className="mt-1 w-full truncate px-1 text-center text-[11px] text-[#757575]">
+                        <div className="mt-1 w-full truncate px-1 text-center text-[11px] text-muted-foreground">
                           {model.role}
                         </div>
 
@@ -175,7 +175,7 @@ export default function SetupPage() {
                       </div>
 
                       {index < orderedModels.length - 1 && (
-                        <div className="flex shrink-0 flex-col items-center text-[#b3b3b3]">
+                        <div className="flex shrink-0 flex-col items-center text-muted-foreground">
                           <ChevronRight className="h-6 w-6" />
                         </div>
                       )}
@@ -192,8 +192,8 @@ export default function SetupPage() {
               </div>
             )}
 
-            <div className="flex items-center gap-2 border-t border-[#f0f0f0] pt-4">
-              <span className="text-xs font-medium text-[#757575]">
+            <div className="flex items-center gap-2 border-t border-border pt-4">
+              <span className="text-xs font-medium text-muted-foreground">
                 Available Models:
               </span>
               <div className="flex flex-wrap items-center gap-2">
@@ -210,7 +210,7 @@ export default function SetupPage() {
                         "relative flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                         isSelected
                           ? "border-[#002D72] bg-[#002D72] pl-2 text-white"
-                          : "border-[#d9d9d9] bg-white text-[#757575] hover:bg-[#f5f5f5]",
+                          : "border-border bg-card text-muted-foreground hover:bg-accent",
                       )}
                       type="button"
                     >
@@ -227,9 +227,9 @@ export default function SetupPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6 shadow-sm transition-colors">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#1e1e1e]">
+              <label className="text-sm font-semibold text-foreground">
                 Debate Question
               </label>
               <Textarea
@@ -280,7 +280,7 @@ export default function SetupPage() {
                 >
                   Use valid example
                 </button>
-                <span className="text-[#d9d9d9]">|</span>
+                <span className="text-muted-foreground">|</span>
                 <button
                   onClick={() => setQuestion("Build me a productivity app")}
                   className="text-xs text-[#002D72] hover:underline"
@@ -292,9 +292,9 @@ export default function SetupPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="flex items-center justify-between text-sm font-semibold text-[#1e1e1e]">
+              <label className="flex items-center justify-between text-sm font-semibold text-foreground">
                 <span>Number of Cycles</span>
-                <span className="text-xs font-normal text-[#757575]">
+                <span className="text-xs font-normal text-muted-foreground">
                   One cycle = {orderedModels.length} model responses
                 </span>
               </label>
@@ -307,7 +307,7 @@ export default function SetupPage() {
                       "flex-1 rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors",
                       cycles === num
                         ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72]"
-                        : "border-[#d9d9d9] bg-white text-[#1e1e1e] hover:bg-[#f5f5f5]",
+                        : "border-border bg-card text-foreground hover:bg-accent",
                     )}
                     type="button"
                   >
@@ -317,7 +317,7 @@ export default function SetupPage() {
               </div>
             </div>
 
-            <div className="mt-2 flex justify-end border-t border-[#f0f0f0] pt-4">
+            <div className="mt-2 flex justify-end border-t border-border pt-4">
               <Button
                 size="lg"
                 className="min-w-[200px]"
@@ -331,16 +331,16 @@ export default function SetupPage() {
         </div>
       </div>
 
-      <div className="flex w-full shrink-0 flex-col gap-6 border-t border-[#d9d9d9] bg-[#fcfcfc] p-6 lg:w-[320px] lg:border-t-0 lg:border-l">
-        <h3 className="font-semibold text-[#1e1e1e]">How it works</h3>
+      <div className="flex w-full shrink-0 flex-col gap-6 border-t border-border bg-card p-6 transition-colors lg:w-[320px] lg:border-t-0 lg:border-l">
+        <h3 className="font-semibold text-foreground">How it works</h3>
 
-        <div className="flex flex-col gap-4 text-sm text-[#757575]">
+        <div className="flex flex-col gap-4 text-sm text-muted-foreground">
           <div className="flex items-start gap-3">
             <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002D72]/10 text-xs font-bold text-[#002D72]">
               1
             </div>
             <p>
-              The <strong className="text-[#1e1e1e]">Crowned model</strong>{" "}
+              The <strong className="text-foreground">Crowned model</strong>{" "}
               always starts.
             </p>
           </div>
@@ -368,7 +368,7 @@ export default function SetupPage() {
             </div>
             <p>
               After the final model completes the last cycle, the council
-              returns one <strong className="text-[#1e1e1e]">final answer</strong>.
+              returns one <strong className="text-foreground">final answer</strong>.
             </p>
           </div>
         </div>

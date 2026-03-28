@@ -19,11 +19,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {
             "bg-[#002D72] text-white hover:bg-[#002D72]/90":
               variant === "primary",
-            "bg-[#f5f5f5] text-[#1E1E1E] hover:bg-[#e0e0e0]":
+            "bg-secondary text-secondary-foreground hover:bg-secondary/80":
               variant === "secondary",
-            "border border-[#d9d9d9] bg-transparent text-[#1E1E1E] hover:bg-[#f5f5f5]":
+            "border border-border bg-transparent text-foreground hover:bg-accent":
               variant === "outline",
-            "hover:bg-[#f5f5f5] text-[#1E1E1E]": variant === "ghost",
+            "text-foreground hover:bg-accent": variant === "ghost",
             "bg-[#007749] text-white hover:bg-[#007749]/90":
               variant === "danger",
           },
