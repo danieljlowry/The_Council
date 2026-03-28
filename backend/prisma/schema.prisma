@@ -36,6 +36,7 @@ enum DebateMessageAuthor {
 model Profile {
   id        String   @id @db.Uuid
   email     String?  @unique
+  username  String   @unique
   fullName  String?  @map("full_name")
   avatarUrl String?  @map("avatar_url")
   createdAt DateTime @default(now()) @map("created_at")

@@ -7,52 +7,103 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { createClient } from "@/utils/supabase/client";
 
-type ErrorState = "none" | "incomplete" | "incorrect" | "signup";
+type ErrorState = "none" | "incomplete" | "auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorState, setErrorState] = useState<ErrorState>("none");
-  const [signupErrorMessage, setSignupErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setInfoMessage(null);
 
-    if (!email.trim() || !password.trim()) {
+    const trimmedEmail = email.trim();
+    const trimmedUsername = username.trim();
+    const trimmedFullName = fullName.trim();
+
+    if (!trimmedEmail || !password.trim() || (!isLogin && !trimmedUsername)) {
       setErrorState("incomplete");
+      setErrorMessage(
+        isLogin
+          ? "Email and password are required."
+          : "Username, email, and password are required.",
+      );
       return;
     }
+
+    setIsSubmitting(true);
+    setErrorState("none");
+    setErrorMessage("");
 
     const supabase = createClient();
 
     if (isLogin) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      });
 
       if (error) {
-        setErrorState("incorrect");
+        setErrorState("auth");
+        setErrorMessage(error.message);
+        setIsSubmitting(false);
         return;
       }
-    } else {
-      const { error } = await supabase.auth.signUp({ email, password });
 
-      if (error) {
-        setSignupErrorMessage(error.message);
-        setErrorState("signup");
-        return;
-      }
+      router.push("/");
+      router.refresh();
+      return;
     }
 
-    setErrorState("none");
-    router.refresh();
-    router.push("/");
+    const { data, error } = await supabase.auth.signUp({
+      email: trimmedEmail,
+      password,
+      options: {
+        data: {
+          username: trimmedUsername,
+          full_name: trimmedFullName || undefined,
+        },
+      },
+    });
+
+    if (error) {
+      setErrorState("auth");
+      setErrorMessage(error.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (data.user && !data.session) {
+      setInfoMessage("Check your email for a confirmation link, then sign in here.");
+      setIsSubmitting(false);
+      setIsLogin(true);
+      setUsername("");
+      setFullName("");
+      setPassword("");
+      return;
+    }
+
+    if (data.session) {
+      router.push("/");
+      router.refresh();
+      return;
+    }
+
+    setIsSubmitting(false);
   };
 
   const closeModal = () => {
     setErrorState("none");
-    setSignupErrorMessage("");
+    setErrorMessage("");
   };
 
   return (
@@ -84,7 +135,47 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {infoMessage && (
+          <div className="mb-4 w-full rounded-lg border border-[#007749]/30 bg-[#007749]/10 px-3 py-2 text-center text-sm text-[#1e1e1e]">
+            {infoMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-5">
+          {!isLogin && (
+            <>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[#1e1e1e]" htmlFor="username">
+                  Username
+                </label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="py-2.5"
+                  autoComplete="username"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[#1e1e1e]" htmlFor="fullName">
+                  Full name <span className="font-normal text-[#757575]">(optional)</span>
+                </label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Display name for your profile"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="py-2.5"
+                  autoComplete="name"
+                />
+              </div>
+            </>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[#1e1e1e]" htmlFor="email">
               Email
@@ -96,6 +187,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="py-2.5"
+              autoComplete="email"
             />
           </div>
 
@@ -111,6 +203,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="py-2.5 pr-10"
+                autoComplete={isLogin ? "current-password" : "new-password"}
               />
               <button
                 type="button"
@@ -125,10 +218,11 @@ export default function LoginPage() {
 
           <Button
             type="submit"
+            disabled={isSubmitting}
             className="mt-4 w-full bg-[#002D72] py-3 text-white shadow-md shadow-[#002D72]/10 transition-colors hover:bg-[#001f50]"
             size="lg"
           >
-            {isLogin ? "Login" : "Sign Up"}
+            {isSubmitting ? "Please wait..." : isLogin ? "Login" : "Create account"}
           </Button>
         </form>
 
@@ -138,8 +232,13 @@ export default function LoginPage() {
             <button
               onClick={() => {
                 setIsLogin((prev) => !prev);
+                setUsername("");
+                setFullName("");
                 setEmail("");
                 setPassword("");
+                setShowPassword(false);
+                setInfoMessage(null);
+                setIsSubmitting(false);
                 closeModal();
               }}
               className="ml-2 font-medium text-[#007749] transition-colors hover:underline"
@@ -151,7 +250,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 text-center text-[11px] font-medium uppercase tracking-widest text-[#a3a3a3]">
-          Authorized Personnel Only
+          Sign in with your Supabase account
         </div>
       </div>
 
@@ -162,14 +261,12 @@ export default function LoginPage() {
               <AlertCircle size={24} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-[#1e1e1e]">
-              {errorState === "signup" ? "Sign Up Failed" : "Login Failed"}
+              {isLogin ? "Login Failed" : "Sign Up Failed"}
             </h3>
             <p className="mb-6 text-sm text-[#757575]">
               {errorState === "incomplete"
-                ? "Must complete all fields."
-                : errorState === "signup"
-                  ? signupErrorMessage
-                  : "Incorrect credentials."}
+                ? errorMessage || "Please complete all required fields."
+                : errorMessage || "Something went wrong. Try again."}
             </p>
             <Button
               onClick={closeModal}
