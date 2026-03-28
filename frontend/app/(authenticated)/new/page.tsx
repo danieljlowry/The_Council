@@ -275,7 +275,7 @@ export default function SetupPage() {
                       "Should early-stage startups prioritize speed or reliability when building their MVP?",
                     )
                   }
-                  className="text-xs text-[#002D72] hover:underline"
+                  className="text-xs text-[#002D72] hover:underline dark:text-muted-foreground"
                   type="button"
                 >
                   Use valid example
@@ -283,7 +283,7 @@ export default function SetupPage() {
                 <span className="text-muted-foreground">|</span>
                 <button
                   onClick={() => setQuestion("Build me a productivity app")}
-                  className="text-xs text-[#002D72] hover:underline"
+                  className="text-xs text-[#002D72] hover:underline dark:text-muted-foreground"
                   type="button"
                 >
                   Use invalid example
@@ -306,7 +306,7 @@ export default function SetupPage() {
                     className={cn(
                       "flex-1 rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors",
                       cycles === num
-                        ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72]"
+                        ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72] dark:border-muted-foreground/45 dark:text-muted-foreground"
                         : "border-border bg-card text-foreground hover:bg-accent",
                     )}
                     type="button"
