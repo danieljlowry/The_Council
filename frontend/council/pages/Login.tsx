@@ -96,17 +96,17 @@ export function Login() {
   };
 
   return (
-    <div className="flex w-full h-screen bg-[#f8f9fa] items-center justify-center relative font-sans">
-      <div className="absolute top-0 left-0 w-full h-[40vh] bg-[#002D72] -z-10" />
-      <div className="absolute top-0 right-0 w-1/3 h-[40vh] bg-gradient-to-l from-[#007749]/20 to-transparent -z-10 mix-blend-overlay" />
+    <div className="flex w-full h-screen bg-background items-center justify-center relative font-sans transition-colors">
+      <div className="absolute top-0 left-0 w-full h-[40vh] bg-[#002D72] dark:bg-[#31435a] -z-10 transition-colors" />
+      <div className="absolute top-0 right-0 w-1/3 h-[40vh] bg-gradient-to-l from-[#007749]/20 to-transparent dark:from-[#9ab5ff]/12 -z-10 mix-blend-overlay" />
 
-      <div className="w-full max-w-[420px] bg-white p-10 rounded-2xl shadow-xl border border-[#e5e5e5] flex flex-col items-center z-10 relative">
+      <div className="w-full max-w-[420px] bg-card p-10 rounded-2xl shadow-xl border border-border flex flex-col items-center z-10 relative transition-colors">
         <div className="w-14 h-14 rounded-xl bg-[#002D72] text-white flex items-center justify-center font-bold text-3xl mb-6 shadow-md shadow-[#002D72]/20">
           C
         </div>
 
         <div className="mb-8 text-center w-full flex flex-col items-center">
-          <h1 className="text-2xl font-bold text-[#1e1e1e] mb-2">The Council</h1>
+          <h1 className="text-2xl font-bold text-card-foreground mb-2">The Council</h1>
           <div
             className={`mt-2 py-2 px-5 rounded-full border shadow-sm transition-colors duration-300 ${isLogin ? "bg-[#002D72]/10 border-[#002D72]/20" : "bg-[#007749]/10 border-[#007749]/20"}`}
           >
@@ -119,7 +119,7 @@ export function Login() {
         </div>
 
         {infoMessage && (
-          <div className="mb-4 w-full rounded-lg border border-[#007749]/30 bg-[#007749]/10 px-3 py-2 text-center text-sm text-[#1e1e1e]">
+          <div className="mb-4 w-full rounded-lg border border-[#007749]/30 bg-[#007749]/10 px-3 py-2 text-center text-sm text-foreground">
             {infoMessage}
           </div>
         )}
@@ -128,10 +128,10 @@ export function Login() {
           {!isLogin && (
             <div className="flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-200">
               <label
-                className="text-sm font-medium text-[#1e1e1e]"
+                className="text-sm font-medium text-foreground"
                 htmlFor="fullName"
               >
-                Full name <span className="font-normal text-[#757575]">(optional)</span>
+                Full name <span className="font-normal text-muted-foreground">(optional)</span>
               </label>
               <Input
                 id="fullName"
@@ -146,7 +146,7 @@ export function Login() {
           )}
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[#1e1e1e]" htmlFor="email">
+            <label className="text-sm font-medium text-foreground" htmlFor="email">
               Email
             </label>
             <Input
@@ -162,7 +162,7 @@ export function Login() {
 
           <div className="flex flex-col gap-1.5">
             <label
-              className="text-sm font-medium text-[#1e1e1e]"
+                className="text-sm font-medium text-foreground"
               htmlFor="password"
             >
               Password
@@ -180,7 +180,7 @@ export function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#757575] hover:text-[#1e1e1e] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -203,7 +203,7 @@ export function Login() {
         </form>
 
         <div className="mt-6 flex items-center justify-center w-full">
-          <span className="text-sm text-[#757575]">
+          <span className="text-sm text-muted-foreground">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
             <button
               type="button"
@@ -222,35 +222,35 @@ export function Login() {
           </span>
         </div>
 
-        <div className="mt-8 text-center text-[11px] text-[#a3a3a3] uppercase tracking-widest font-medium">
+        <div className="mt-8 text-center text-[11px] text-muted-foreground uppercase tracking-widest font-medium">
           Sign in with your Supabase account
         </div>
       </div>
 
       {errorState !== "none" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl border border-[#e5e5e5] p-6 max-w-[340px] w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-200 relative">
+          <div className="bg-card rounded-xl shadow-2xl border border-border p-6 max-w-[340px] w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-200 relative">
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
               <AlertCircle size={24} />
             </div>
-            <h3 className="text-lg font-bold text-[#1e1e1e] mb-2">
+            <h3 className="text-lg font-bold text-card-foreground mb-2">
               {isLogin ? "Login Failed" : "Sign Up Failed"}
             </h3>
-            <p className="text-sm text-[#757575] mb-6 break-words px-1">
+            <p className="text-sm text-muted-foreground mb-6 break-words px-1">
               {errorState === "incomplete"
                 ? errorMessage || "Please complete all required fields."
                 : errorMessage || "Something went wrong. Try again."}
             </p>
             <Button
               onClick={closeModal}
-              className="w-full bg-[#1e1e1e] hover:bg-black text-white py-2"
+              className="w-full bg-foreground hover:bg-foreground/90 text-background py-2"
             >
               Try Again
             </Button>
             <button
               type="button"
               onClick={closeModal}
-              className="absolute top-4 right-4 text-[#a3a3a3] hover:text-[#1e1e1e] transition-colors"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Close"
             >
               <X size={20} />

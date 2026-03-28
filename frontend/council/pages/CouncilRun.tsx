@@ -63,7 +63,7 @@ function readCouncilPayload(): CouncilPayload {
 
 export function CouncilRun() {
   const router = useRouter();
-  const [state] = useState<CouncilPayload>(() => readCouncilPayload());
+  const [state, setState] = useState<CouncilPayload>(null);
 
   // Fallback if accessed directly
   const question = state?.question || "Should early-stage startups prioritize speed or reliability when building their MVP?";
@@ -79,6 +79,10 @@ export function CouncilRun() {
   const [isFinished, setIsFinished] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setState(readCouncilPayload());
+  }, []);
 
   const totalSteps = orderedModels.length;
   const totalProcessSteps = totalSteps * totalCycles;
@@ -135,17 +139,17 @@ export function CouncilRun() {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row w-full h-full bg-[#f5f5f5] overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row w-full h-full bg-background overflow-hidden relative transition-colors">
       {/* Center workspace */}
       <div className="flex-1 flex flex-col items-center py-4 lg:py-8 px-4 lg:px-6 overflow-hidden h-full">
         {/* Header & Progress */}
-        <div className="w-full max-w-4xl flex items-center justify-between mb-8 bg-white p-4 rounded-xl border border-[#d9d9d9] shadow-sm z-10">
+        <div className="w-full max-w-4xl flex items-center justify-between mb-8 bg-card p-4 rounded-xl border border-border shadow-sm z-10 transition-colors">
           <div>
-            <h2 className="text-xl font-bold text-[#1e1e1e]">
+            <h2 className="text-xl font-bold text-card-foreground">
               {isFinished ? "Council Output Complete" : "Council in Progress"}
             </h2>
-            <p className="text-sm text-[#757575] mt-1 line-clamp-1" title={question}>
-              <span className="font-semibold text-[#1e1e1e]">Topic:</span> {question}
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-1" title={question}>
+              <span className="font-semibold text-foreground">Topic:</span> {question}
             </p>
           </div>
 
@@ -159,12 +163,12 @@ export function CouncilRun() {
                   <CheckCircle2 className="w-4 h-4" /> Final Answer Ready
                 </button>
               ) : (
-                <span className="text-[#002D72]">
+                <span className="text-[#002D72] dark:text-primary">
                   Cycle {currentCycle} of {totalCycles} • Step {currentStepIndex + 1} of {totalSteps}
                 </span>
               )}
             </div>
-            <div className="w-full bg-[#e5e5e5] h-2 rounded-full overflow-hidden">
+            <div className="w-full bg-accent h-2 rounded-full overflow-hidden">
               <div
                 className={cn(
                   "h-full transition-all duration-500 ease-out rounded-full",
@@ -191,7 +195,7 @@ export function CouncilRun() {
         )}
 
         {/* Stage Visualization */}
-        <div className="relative flex-1 w-full max-w-5xl flex items-center justify-center p-4 lg:p-8 bg-gradient-to-b from-[#007749] to-[#002D72] rounded-3xl border-4 border-white shadow-xl overflow-hidden min-h-[240px]">
+        <div className="relative flex-1 w-full max-w-5xl flex items-center justify-center p-4 lg:p-8 bg-gradient-to-b from-[#0c8464] via-[#155a78] to-[#1a365d] dark:from-[#1d6f63] dark:via-[#355974] dark:to-[#43526b] rounded-3xl border-4 border-card shadow-xl overflow-hidden min-h-[240px] transition-colors">
           <div className="absolute inset-0 bg-black/10" />
           
           <div className="flex items-center justify-center gap-6 z-10 w-full">
@@ -259,9 +263,9 @@ export function CouncilRun() {
       </div>
 
       {/* Right panel - Council Log */}
-      <div className="w-full lg:w-[380px] h-[40%] lg:h-full bg-[#fcfcfc] border-t lg:border-t-0 lg:border-l border-[#d9d9d9] flex flex-col shrink-0 shadow-[-4px_0_15px_rgba(0,0,0,0.02)] z-10">
-        <div className="p-4 border-b border-[#d9d9d9] bg-white sticky top-0 z-10">
-          <h3 className="font-semibold text-[#1e1e1e] flex items-center gap-2">
+      <div className="w-full lg:w-[380px] h-[40%] lg:h-full bg-card border-t lg:border-t-0 lg:border-l border-border flex flex-col shrink-0 shadow-[-4px_0_15px_rgba(0,0,0,0.02)] z-10 transition-colors">
+        <div className="p-4 border-b border-border bg-card sticky top-0 z-10">
+          <h3 className="font-semibold text-card-foreground flex items-center gap-2">
             Council Log
             {isFinished && <span className="text-[10px] bg-[#007749]/10 text-[#007749] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Resolved</span>}
           </h3>
@@ -270,32 +274,31 @@ export function CouncilRun() {
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
           {logsByCycle.map((cycleGroup, idx) => (
             <div key={`cycle-${cycleGroup.cycleNum}`} className="flex flex-col gap-4 relative">
-              <div className="sticky top-0 z-10 flex items-center gap-2 py-1 bg-[#fcfcfc]/90 backdrop-blur-sm">
-                <div className="h-px bg-[#d9d9d9] flex-1" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#757575] bg-[#f0f0f0] px-2 py-0.5 rounded-full">
+              <div className="sticky top-0 z-10 flex items-center gap-2 py-1 bg-card/90 backdrop-blur-sm">
+                <div className="h-px bg-border flex-1" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-accent px-2 py-0.5 rounded-full">
                   Cycle {cycleGroup.cycleNum}
                 </span>
-                <div className="h-px bg-[#d9d9d9] flex-1" />
+                <div className="h-px bg-border flex-1" />
               </div>
 
               {cycleGroup.entries.map((log) => (
                 <div key={log.id} className="flex gap-3 opacity-0 animate-[fadeIn_0.3s_ease-out_forwards]">
                   <div className="shrink-0 flex flex-col items-center">
-                    <img src={log.img} alt={log.modelName} className="w-8 h-8 rounded-full border border-[#d9d9d9] bg-white object-cover" />
+                    <img src={log.img} alt={log.modelName} className="w-8 h-8 rounded-full border border-border bg-card object-cover" />
                     {log.cycle === currentCycle && log.step < orderedModels.length && (
-                      <div className="w-0.5 h-full bg-[#d9d9d9] mt-2 mb-[-16px]" /> // connection line
+                      <div className="w-0.5 h-full bg-border mt-2 mb-[-16px]" />
                     )}
                   </div>
                   <div className="flex-1 pb-2">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-[#1e1e1e]">{log.modelName}</span>
-                      <span className="text-[10px] bg-[#e5e5e5] text-[#757575] px-1.5 py-0.5 rounded text-nowrap">
+                      <span className="text-sm font-semibold text-foreground">{log.modelName}</span>
+                      <span className="text-[10px] bg-accent text-muted-foreground px-1.5 py-0.5 rounded text-nowrap">
                         {log.role}
                       </span>
                     </div>
-                    <div className="text-sm text-[#4a4a4a] leading-relaxed bg-white border border-[#e5e5e5] p-3 rounded-lg rounded-tl-none shadow-sm relative">
-                      {/* Speech bubble pointer */}
-                      <div className="absolute -left-1.5 top-0 w-3 h-3 bg-white border-l border-t border-[#e5e5e5] rotate-[-45deg] rounded-tl-sm" />
+                    <div className="text-sm text-foreground leading-relaxed bg-card border border-border p-3 rounded-lg rounded-tl-none shadow-sm relative">
+                      <div className="absolute -left-1.5 top-0 w-3 h-3 bg-card border-l border-t border-border rotate-[-45deg] rounded-tl-sm" />
                       <span className="relative z-10">{log.content}</span>
                     </div>
                   </div>
@@ -308,17 +311,17 @@ export function CouncilRun() {
           {!isFinished && logsByCycle[logsByCycle.length - 1]?.entries.length < totalSteps && (
             <div className="flex gap-3 opacity-0 animate-[fadeIn_0.3s_ease-out_forwards]">
               <div className="shrink-0 flex flex-col items-center">
-                <img src={orderedModels[currentStepIndex].img} alt={orderedModels[currentStepIndex].name} className="w-8 h-8 rounded-full border border-[#002D72] shadow-[0_0_0_2px_rgba(0,45,114,0.1)] object-cover" />
+                <img src={orderedModels[currentStepIndex].img} alt={orderedModels[currentStepIndex].name} className="w-8 h-8 rounded-full border border-[#002D72] dark:border-primary shadow-[0_0_0_2px_rgba(0,45,114,0.1)] object-cover" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-semibold text-[#1e1e1e]">{orderedModels[currentStepIndex].name}</span>
-                  <Loader2 className="w-3 h-3 text-[#002D72] animate-spin" />
+                  <span className="text-sm font-semibold text-foreground">{orderedModels[currentStepIndex].name}</span>
+                  <Loader2 className="w-3 h-3 text-[#002D72] dark:text-primary animate-spin" />
                 </div>
-                <div className="text-sm bg-white border border-[#e5e5e5] p-3 rounded-lg rounded-tl-none w-16 flex items-center justify-center gap-1 h-10">
-                  <div className="w-1.5 h-1.5 bg-[#b3b3b3] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1.5 h-1.5 bg-[#b3b3b3] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1.5 h-1.5 bg-[#b3b3b3] rounded-full animate-bounce" />
+                <div className="text-sm bg-card border border-border p-3 rounded-lg rounded-tl-none w-16 flex items-center justify-center gap-1 h-10">
+                  <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
                 </div>
               </div>
             </div>
@@ -331,10 +334,10 @@ export function CouncilRun() {
       {/* Modal */}
       {showModal && (
         <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 animate-[fadeIn_0.2s_ease-out_forwards]">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-95 animate-[popIn_0.3s_ease-out_forwards]">
-            <div className="p-6 border-b border-[#f0f0f0] flex items-start justify-between bg-gradient-to-r from-white to-[#f5fcf8]">
+          <div className="bg-card w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-95 animate-[popIn_0.3s_ease-out_forwards] transition-colors">
+            <div className="p-6 border-b border-border flex items-start justify-between bg-gradient-to-r from-card to-accent/40">
               <div>
-                <h2 className="text-2xl font-bold text-[#1e1e1e] tracking-tight">Final Council Response</h2>
+                <h2 className="text-2xl font-bold text-card-foreground tracking-tight">Final Council Response</h2>
                 <div className="mt-2 flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 text-xs font-medium bg-[#007749]/10 text-[#007749] px-2 py-1 rounded-full">
                     <CheckCircle2 className="w-3 h-3" /> Completed after {totalCycles} cycles
@@ -343,47 +346,47 @@ export function CouncilRun() {
               </div>
               <button 
                 onClick={() => setShowModal(false)}
-                className="text-[#757575] hover:text-[#1e1e1e] transition-colors p-1"
+                className="text-muted-foreground hover:text-foreground transition-colors p-1"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>
             
             <div className="p-8 pb-10">
-              <div className="text-[#1e1e1e] text-lg leading-relaxed font-medium">
+              <div className="text-foreground text-lg leading-relaxed font-medium">
                 {logs[logs.length - 1]?.content}
               </div>
               
-              <div className="mt-8 pt-6 border-t border-[#f0f0f0]">
-                <p className="text-xs font-semibold text-[#757575] uppercase tracking-wider mb-4">
+              <div className="mt-8 pt-6 border-t border-border">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
                   Council Metadata
                 </p>
                 <div className="grid grid-cols-2 gap-y-4 text-sm">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Started by:</span>
-                    <span className="font-medium text-[#1e1e1e] flex items-center gap-1">
+                    <span className="text-muted-foreground">Started by:</span>
+                    <span className="font-medium text-foreground flex items-center gap-1">
                       <Crown className="w-3 h-3 text-[#F59E0B]" /> {orderedModels[0].name} ({orderedModels[0].role})
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Total Models:</span>
-                    <span className="font-medium text-[#1e1e1e]">{orderedModels.length} participants</span>
+                    <span className="text-muted-foreground">Total Models:</span>
+                    <span className="font-medium text-foreground">{orderedModels.length} participants</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Sequence:</span>
-                    <span className="font-medium text-[#1e1e1e]">
+                    <span className="text-muted-foreground">Sequence:</span>
+                    <span className="font-medium text-foreground">
                       {orderedModels.map(m => m.name).join(" → ")}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#757575]">Process Info:</span>
-                    <span className="font-medium text-[#1e1e1e]">Generated after sequential review by {orderedModels.length} models across {totalCycles} cycles.</span>
+                    <span className="text-muted-foreground">Process Info:</span>
+                    <span className="font-medium text-foreground">Generated after sequential review by {orderedModels.length} models across {totalCycles} cycles.</span>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="p-4 bg-[#fcfcfc] border-t border-[#f0f0f0] flex justify-end gap-3">
+            <div className="p-4 bg-card border-t border-border flex justify-end gap-3">
               <Button variant="outline" onClick={() => setShowModal(false)}>
                 View Saved Run
               </Button>

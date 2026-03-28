@@ -12,15 +12,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
+        suppressHydrationWarning
         className={cn(
-          "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002D72] disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
           {
-            "bg-[#002D72] text-white hover:bg-[#002D72]/90": variant === "primary",
-            "bg-[#f5f5f5] text-[#1E1E1E] hover:bg-[#e0e0e0]": variant === "secondary",
-            "border border-[#d9d9d9] bg-transparent text-[#1E1E1E] hover:bg-[#f5f5f5]":
+            "bg-[#002D72] text-white hover:bg-[#002D72]/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90": variant === "primary",
+            "bg-secondary text-secondary-foreground hover:bg-secondary/80": variant === "secondary",
+            "border border-border bg-transparent text-foreground hover:bg-accent/70":
               variant === "outline",
-            "hover:bg-[#f5f5f5] text-[#1E1E1E]": variant === "ghost",
-            "bg-[#007749] text-white hover:bg-[#007749]/90": variant === "danger", // Wait, green is not danger. Let's keep it green for success/finish actions.
+            "hover:bg-accent/70 text-foreground": variant === "ghost",
+            "bg-[#007749] text-white hover:bg-[#007749]/90 dark:bg-[#2e9a68] dark:hover:bg-[#238557]": variant === "danger",
           },
           {
             "h-8 px-3 text-xs": size === "sm",

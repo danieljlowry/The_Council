@@ -56,29 +56,29 @@ export function Setup() {
   const orderedModels = selectedModels.map((id) => AVAILABLE_MODELS.find((m) => m.id === id)!);
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row w-full h-full bg-[#f5f5f5] overflow-hidden">
+    <div className="flex-1 flex flex-col lg:flex-row w-full h-full bg-background overflow-hidden transition-colors">
       {/* Center workspace */}
       <div className="flex-1 flex flex-col items-center py-8 lg:py-12 px-4 lg:px-8 overflow-y-auto">
         <div className="w-full max-w-3xl flex flex-col gap-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#1e1e1e] tracking-tight">Configure Council</h1>
-            <p className="text-[#757575] mt-2">
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">Configure Council</h1>
+            <p className="text-muted-foreground mt-2">
               Select the models, set the order, and define the topic for discussion.
             </p>
           </div>
 
           {/* Model Selection Stage */}
-          <div className="bg-white p-6 rounded-2xl border border-[#d9d9d9] shadow-sm flex flex-col gap-6">
+          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col gap-6 transition-colors">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[#1e1e1e]">Council Sequence</h2>
-              <div className="text-xs font-medium text-[#757575] uppercase tracking-wider bg-[#f5f5f5] px-2 py-1 rounded">
+              <h2 className="text-lg font-semibold text-card-foreground">Council Sequence</h2>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider bg-accent/60 px-2 py-1 rounded">
                 Relay Order
               </div>
             </div>
             
             {orderedModels.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-[#e5e5e5] rounded-xl bg-[#fafafa]">
-                <p className="text-sm font-medium text-[#757575]">Select at least 3 LLMs to build your council sequence.</p>
+              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-border rounded-xl bg-accent/30">
+                <p className="text-sm font-medium text-muted-foreground">Select at least 3 LLMs to build your council sequence.</p>
               </div>
             ) : (
               <div className="flex items-center gap-4 pt-6 pb-4 pl-5 overflow-x-auto min-h-[160px]">
@@ -91,11 +91,11 @@ export function Setup() {
                         className={cn(
                           "relative flex flex-col items-center w-36 p-4 rounded-xl border-2 transition-all",
                           isCrowned
-                            ? "border-[#002D72] bg-[#002D72]/5 shadow-sm"
-                            : "border-[#d9d9d9] bg-white hover:border-[#b3b3b3]"
+                            ? "border-[#002D72] bg-[#002D72]/5 shadow-sm dark:border-primary dark:bg-primary/12"
+                            : "border-border bg-card hover:border-muted-foreground/40"
                         )}
                       >
-                        <div className="absolute -top-3 -left-3 bg-[#1e1e1e] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm z-10">
+                        <div className="absolute -top-3 -left-3 bg-foreground text-background w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm z-10">
                           {orderNumber}
                         </div>
                         {isCrowned && (
@@ -104,24 +104,24 @@ export function Setup() {
                           </div>
                         )}
                         <img src={model.img} alt={model.name} className="w-12 h-12 rounded-full mb-3 shadow-sm border border-black/5" />
-                        <div className="text-sm font-bold text-[#1e1e1e] text-center w-full truncate">
+                        <div className="text-sm font-bold text-card-foreground text-center w-full truncate">
                           {model.name}
                         </div>
-                        <div className="text-[11px] text-[#757575] text-center mt-1 w-full truncate px-1">
+                        <div className="text-[11px] text-muted-foreground text-center mt-1 w-full truncate px-1">
                           {model.role}
                         </div>
                         
                         {!isCrowned && (
                           <button
                             onClick={() => setCrownedModel(model.id)}
-                            className="mt-3 text-[10px] font-medium text-[#002D72] hover:bg-[#002D72]/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="mt-3 text-[10px] font-medium text-[#002D72] hover:bg-[#002D72]/10 dark:text-primary dark:hover:bg-primary/12 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             Make Crowned
                           </button>
                         )}
                       </div>
                       {index < orderedModels.length - 1 && (
-                        <div className="flex flex-col items-center text-[#b3b3b3] shrink-0">
+                        <div className="flex flex-col items-center text-muted-foreground shrink-0">
                           <ChevronRight className="w-6 h-6" />
                         </div>
                       )}
@@ -139,8 +139,8 @@ export function Setup() {
             )}
 
             {/* Model Toggle pool */}
-            <div className="flex items-center gap-2 pt-4 border-t border-[#f0f0f0]">
-              <span className="text-xs font-medium text-[#757575]">Available Models:</span>
+            <div className="flex items-center gap-2 pt-4 border-t border-border">
+              <span className="text-xs font-medium text-muted-foreground">Available Models:</span>
               <div className="flex flex-wrap items-center gap-2">
                 {AVAILABLE_MODELS.map((m) => {
                   const selectedIndex = selectedModels.indexOf(m.id);
@@ -153,12 +153,12 @@ export function Setup() {
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors relative",
                         isSelected
-                          ? "border-[#002D72] bg-[#002D72] text-white pl-2"
-                          : "border-[#d9d9d9] bg-white text-[#757575] hover:bg-[#f5f5f5]"
+                          ? "border-[#002D72] bg-[#002D72] text-white pl-2 dark:border-primary dark:bg-primary dark:text-primary-foreground"
+                          : "border-border bg-card text-muted-foreground hover:bg-accent/60"
                       )}
                     >
                       {isSelected && (
-                        <span className="bg-white text-[#002D72] w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold">
+                        <span className="bg-white text-[#002D72] dark:bg-background dark:text-primary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold">
                           {orderNumber}
                         </span>
                       )}
@@ -171,9 +171,9 @@ export function Setup() {
           </div>
 
           {/* Form setup */}
-          <div className="bg-white p-6 rounded-2xl border border-[#d9d9d9] shadow-sm flex flex-col gap-6">
+          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col gap-6 transition-colors">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#1e1e1e]">Debate Question</label>
+              <label className="text-sm font-semibold text-foreground">Debate Question</label>
               <Textarea
                 placeholder="e.g., Should early-stage startups prioritize speed or reliability when building their MVP?"
                 className={cn("text-base py-3", isInvalid && "border-[#F59E0B] focus-visible:ring-[#F59E0B]")}
@@ -197,14 +197,14 @@ export function Setup() {
               <div className="flex items-center gap-2 mt-2">
                 <button 
                   onClick={() => setQuestion("Should early-stage startups prioritize speed or reliability when building their MVP?")}
-                  className="text-xs text-[#002D72] hover:underline"
+                  className="text-xs text-[#002D72] dark:text-primary hover:underline"
                 >
                   Use valid example
                 </button>
-                <span className="text-[#d9d9d9]">|</span>
+                <span className="text-border">|</span>
                 <button 
                   onClick={() => setQuestion("Build me a productivity app")}
-                  className="text-xs text-[#002D72] hover:underline"
+                  className="text-xs text-[#002D72] dark:text-primary hover:underline"
                 >
                   Use invalid example
                 </button>
@@ -212,9 +212,9 @@ export function Setup() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#1e1e1e] flex items-center justify-between">
+              <label className="text-sm font-semibold text-foreground flex items-center justify-between">
                 <span>Number of Cycles</span>
-                <span className="text-xs font-normal text-[#757575]">
+                <span className="text-xs font-normal text-muted-foreground">
                   One cycle = {orderedModels.length} model responses
                 </span>
               </label>
@@ -226,8 +226,8 @@ export function Setup() {
                     className={cn(
                       "flex-1 py-2 px-4 rounded-lg border text-sm font-medium transition-colors text-center",
                       cycles === num
-                        ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72]"
-                        : "border-[#d9d9d9] bg-white text-[#1e1e1e] hover:bg-[#f5f5f5]"
+                        ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72] dark:border-primary dark:bg-primary/12 dark:text-primary"
+                        : "border-border bg-card text-foreground hover:bg-accent/60"
                     )}
                   >
                     {num} {num === 1 ? "Cycle" : "Cycles"}
@@ -236,7 +236,7 @@ export function Setup() {
               </div>
             </div>
             
-            <div className="pt-4 border-t border-[#f0f0f0] mt-2 flex justify-end">
+            <div className="pt-4 border-t border-border mt-2 flex justify-end">
               <Button
                 size="lg"
                 className="min-w-[200px]"
@@ -251,13 +251,13 @@ export function Setup() {
       </div>
 
       {/* Right panel - Helper state */}
-      <div className="w-full lg:w-[320px] bg-[#fcfcfc] border-t lg:border-t-0 lg:border-l border-[#d9d9d9] flex flex-col p-6 shrink-0 gap-6">
-        <h3 className="font-semibold text-[#1e1e1e]">How it works</h3>
+      <div className="w-full lg:w-[320px] bg-card border-t lg:border-t-0 lg:border-l border-border flex flex-col p-6 shrink-0 gap-6 transition-colors">
+        <h3 className="font-semibold text-card-foreground">How it works</h3>
         
-        <div className="flex flex-col gap-4 text-sm text-[#757575]">
+        <div className="flex flex-col gap-4 text-sm text-muted-foreground">
           <div className="flex gap-3 items-start">
             <div className="w-6 h-6 rounded-full bg-[#002D72]/10 text-[#002D72] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
-            <p>The <strong className="text-[#1e1e1e]">Crowned model</strong> always starts.</p>
+            <p>The <strong className="text-foreground">Crowned model</strong> always starts.</p>
           </div>
           <div className="flex gap-3 items-start">
             <div className="w-6 h-6 rounded-full bg-[#002D72]/10 text-[#002D72] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
@@ -269,7 +269,7 @@ export function Setup() {
           </div>
           <div className="flex gap-3 items-start">
             <div className="w-6 h-6 rounded-full bg-[#002D72]/10 text-[#002D72] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
-            <p>After the final model completes the last cycle, the council returns one <strong className="text-[#1e1e1e]">final answer</strong>.</p>
+            <p>After the final model completes the last cycle, the council returns one <strong className="text-foreground">final answer</strong>.</p>
           </div>
         </div>
       </div>
