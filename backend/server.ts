@@ -1,7 +1,7 @@
 // This is the main file, responsible for setting up the Fastify server and registering routes.
 
 import Fastify from 'fastify';
-import debateRoutes from './routes/debate';
+import debateRoutes from './routes/debate'; // Import debate-related routes
 
 const app = Fastify();
 
