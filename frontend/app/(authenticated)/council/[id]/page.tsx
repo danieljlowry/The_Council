@@ -561,7 +561,7 @@ export default function CouncilRunPage({
           </div>
         )}
 
-        <div className="relative flex min-h-[240px] w-full max-w-5xl flex-1 items-center justify-center overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b from-[#007749] to-[#002D72] p-4 shadow-xl transition-colors lg:p-8">
+        <div className="relative flex min-h-[240px] w-full max-w-5xl flex-1 items-center justify-center overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b from-[#007749] to-[#002D72] p-4 shadow-xl transition-colors dark:from-[#1d6f63] dark:via-[#355974] dark:to-[#43526b] lg:p-8">
           <div className="absolute inset-0 bg-black/10" />
 
           <div className="z-10 flex w-full items-center justify-center gap-6">

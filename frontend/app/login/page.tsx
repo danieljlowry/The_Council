@@ -108,7 +108,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-background font-sans transition-colors">
-      <div className="absolute top-0 left-0 -z-10 h-[40vh] w-full bg-[#002D72]" />
+      <div className="absolute top-0 left-0 -z-10 h-[40vh] w-full bg-[#002D72] dark:bg-[#31435a]" />
       <div className="absolute top-0 right-0 -z-10 h-[40vh] w-1/3 bg-gradient-to-l from-[#007749]/20 to-transparent mix-blend-overlay" />
 
       <div className="relative z-10 flex w-full max-w-[420px] flex-col items-center rounded-2xl border border-border bg-card p-10 shadow-xl transition-colors">
