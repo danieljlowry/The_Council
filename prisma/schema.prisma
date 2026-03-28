@@ -1,0 +1,130 @@
+// https://pris.ly/d/prisma-schema
+//
+// Supabase Auth: create `profiles` row when a user signs up (e.g. DB trigger on auth.users
+// or Next.js callback) using the same UUID as `auth.users.id` for Profile.id.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum CouncilStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum AgentSlot {
+  CROWN
+  AGENT_B
+  AGENT_C
+  AGENT_D
+}
+
+enum DebateMessageAuthor {
+  USER
+  AGENT
+}
+
+/// App user profile; id must match auth.users.id (insert after Supabase sign-up).
+model Profile {
+  id        String   @id @db.Uuid
+  email     String?  @unique
+  fullName  String?  @map("full_name")
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  councils Council[]
+
+  @@map("profiles")
+}
+
+/// User-owned workspace for a multi-agent debate (1–4 agents, 2 rounds).
+model Council {
+  id            String        @id @default(uuid()) @db.Uuid
+  ownerId       String        @map("owner_id") @db.Uuid
+  title         String
+  /// Layer 1: primary prompt — anchors the whole session.
+  primaryPrompt String        @map("primary_prompt") @db.Text
+  status        CouncilStatus @default(DRAFT)
+  /// Final combined summary after round 2 (for UI).
+  finalSummary  String?       @map("final_summary") @db.Text
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  owner    Profile         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  agents   CouncilAgent[]
+  rounds   CouncilRound[]
+  messages DebateMessage[]
+
+  @@index([ownerId])
+  @@map("councils")
+}
+
+/// One row per agent slot (Crown + up to three follow-ups) for a council.
+model CouncilAgent {
+  id          String    @id @default(uuid()) @db.Uuid
+  councilId   String    @map("council_id") @db.Uuid
+  slot        AgentSlot
+  displayName String    @map("display_name")
+  specialty   String    @db.Text
+  /// Optional OpenRouter / model identifier for orchestration.
+  modelKey    String?   @map("model_key")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  council  Council         @relation(fields: [councilId], references: [id], onDelete: Cascade)
+  messages DebateMessage[]
+
+  @@unique([councilId, slot])
+  @@index([councilId])
+  @@map("council_agents")
+}
+
+/// Round 1 or 2 within a council; holds optional user feedback and Layer-3 memory for the next step.
+model CouncilRound {
+  id            String    @id @default(uuid()) @db.Uuid
+  councilId     String    @map("council_id") @db.Uuid
+  number        Int
+  /// User corrections / notes after round 1 (before round 2 runs).
+  userFeedback  String?   @map("user_feedback") @db.Text
+  /// Layer 3: compressed summary after this round (for cheap context in later prompts).
+  memorySummary String?   @map("memory_summary") @db.Text
+  startedAt     DateTime? @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  council  Council         @relation(fields: [councilId], references: [id], onDelete: Cascade)
+  messages DebateMessage[]
+
+  @@unique([councilId, number])
+  @@index([councilId])
+  @@map("council_rounds")
+}
+
+/// Single message in the debate transcript (user or agent), ordered by `sequence` within a round.
+/// Layer 2 “recent messages” is derived in app code (last 1–2 per round from this table).
+model DebateMessage {
+  id             String              @id @default(uuid()) @db.Uuid
+  councilId      String              @map("council_id") @db.Uuid
+  roundId        String              @map("round_id") @db.Uuid
+  councilAgentId String?             @map("council_agent_id") @db.Uuid
+  author         DebateMessageAuthor
+  sequence       Int
+  content        String              @db.Text
+  createdAt      DateTime            @default(now()) @map("created_at")
+
+  council      Council       @relation(fields: [councilId], references: [id], onDelete: Cascade)
+  round        CouncilRound  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  councilAgent CouncilAgent? @relation(fields: [councilAgentId], references: [id], onDelete: SetNull)
+
+  @@index([roundId, sequence])
+  @@index([councilId])
+  @@map("debate_messages")
+}

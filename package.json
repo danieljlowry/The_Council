@@ -1,0 +1,35 @@
+{
+  "name": "the-council",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:ping": "sh -c 'echo \"SELECT 1 AS ok;\" | prisma db execute --stdin --schema prisma/schema.prisma'",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:ping:ipv4": "NODE_OPTIONS=--dns-result-order=ipv4first sh -c 'echo \"SELECT 1 AS ok;\" | prisma db execute --stdin --schema prisma/schema.prisma'"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.100.1",
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.2.4",
+    "prisma": "^6.19.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

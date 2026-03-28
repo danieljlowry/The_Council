@@ -1,1 +1,9 @@
 .DS_Store
+.env
+.env.local
+/generated/prisma
+/node_modules
+.next/
+out/
+
+/app/generated/prisma
