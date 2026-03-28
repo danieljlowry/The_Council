@@ -12,7 +12,7 @@ export default async function (app: FastifyInstance) {
       const { prompt } = req.body as {prompt: string}; // Extract user prompt from request body, prompt set to string type
       const result =  await runDebate(prompt); // Run debate logic with user provided prompt
       res.send(result); // Send debate result back to user
-      
+
     }
 
     // Error handler: Catch any errors during debate endpoint processing
