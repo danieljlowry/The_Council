@@ -4,6 +4,9 @@
   "private": true,
   "description": "Database (Prisma) and future API — no UI",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "db:generate": "npx prisma generate",
     "db:ping": "sh -c 'echo \"SELECT 1 AS ok;\" | npx prisma db execute --stdin --schema prisma/schema.prisma'",
     "db:migrate": "npx prisma migrate dev",
@@ -11,11 +14,14 @@
     "db:ping:ipv4": "NODE_OPTIONS=--dns-result-order=ipv4first sh -c 'echo \"SELECT 1 AS ok;\" | npx prisma db execute --stdin --schema prisma/schema.prisma'"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0"
+    "@prisma/client": "^6.19.0",
+    "fastify": "^4.26.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "prisma": "^6.19.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }

@@ -5,10 +5,8 @@
 
 import { callLLM } from "../services/llm";
 
-export async function modelD(input: string) {
+export async function modelD(originalPrompt: string, modelCOutput: string) {
 
-    // Prompt for Model D
-    // Note: specifically requires backticks (`) for multi-line string and interpolation of input variable
     const prompt = ` 
     
     You are a critical evaluator and summarizer AI.
@@ -17,19 +15,25 @@ export async function modelD(input: string) {
     2. Identify any issues or weaknesses in the answer provided by Model C, and provide a critical evaluation of the answer.
     3. Suggest any improvements or refinements that could be made to the answer provided by Model C, based on your critical evaluation of the answer.
 
+    The text under "MODEL C OUTPUT" is Model C's full response—base your analysis only on that text.
+
     Return JSON:
     {
 
         "summary": "...",
         "issues": [],
         "evaluation": "...",
-        "suggested_improvements": "[]"
+        "suggested_improvements": []
 
     }   
 
-    ${input}
+    USER'S ORIGINAL QUESTION:
+    ${originalPrompt}
+
+    MODEL C OUTPUT:
+    ${modelCOutput}
 
     `
 
-    return callLLM('model-d', prompt);
+    return callLLM('qwen/qwen3-235b-a22b-2507', prompt);
 }

@@ -7,9 +7,9 @@ const app = Fastify();
 
 app.register(debateRoutes); // Register debate-related routes
 
-app.listen({ port: 3000 }, () => {
+app.listen({ port: 3001 }, () => {
 
-    console.log('Server is running on http://localhost:3000');
+    console.log('Server is running on http://localhost:3001');
 
     // Try has to be here in order to use catch (error)
     try {}

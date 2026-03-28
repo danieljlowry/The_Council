@@ -11,5 +11,8 @@
     "db:migrate": "npm run db:migrate --prefix backend",
     "db:studio": "npm run db:studio --prefix backend",
     "db:generate": "npm run db:generate --prefix backend"
+  },
+  "dependencies": {
+    "dependencies": "^0.0.1"
   }
 }

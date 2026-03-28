@@ -28,5 +28,5 @@ export async function modelA(input: string) {
 
     `
 
-    return callLLM('model-a', prompt);
+    return callLLM('openai/gpt-3.5-turbo', prompt);
 }

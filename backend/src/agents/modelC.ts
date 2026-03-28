@@ -4,14 +4,13 @@
 
 import { callLLM } from "../services/llm";
 
-export async function modelC(input: string) {
+export async function modelC(originalPrompt: string, modelBOutput: string) {
 
-    // Prompt for Model C, refines answer provided from Model B, and provides more nuance and complexity to the response
-    // Note: specifically requires backticks (`) for multi-line string and interpolation of input variable
     const prompt = ` 
     
     You are a refinement specialist AI.
-    Refine the answer provided from Model B, and provide more nuance and complexity to the response.
+    Refine the answer provided from Model B below, and provide more nuance and complexity to the response.
+    The text under "MODEL B OUTPUT" is the full answer from Model B—do not say it is missing; work from that text.
 
     Here is a set of rules to follow when refining the answer:
     1. Remove any redundancy in the answer, and make it more concise.
@@ -19,10 +18,13 @@ export async function modelC(input: string) {
     3. Improve clarity of the answer, and make it easier to understand.
     4. Do not introduce new ideas into the answer provided by Model B, only refine it and provide more nuance and complexity to the response.
     
+    USER'S ORIGINAL QUESTION:
+    ${originalPrompt}
 
-    ${input}
+    MODEL B OUTPUT (refine this):
+    ${modelBOutput}
 
     `
 
-    return callLLM('model-c', prompt);
+    return callLLM('anthropic/claude-3.5-haiku', prompt);
 }
