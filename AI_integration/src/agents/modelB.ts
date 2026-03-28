@@ -1,7 +1,7 @@
 // File for Model B
 // Takes Model A's response as input and instructs LLM to expand on it 
 // Provides more detail and depth to the response, without introducing new ideas into the answer provided by Model A
-// Note: Model C is not restricted to a specific LLM
+// Note: Model B is not restricted to a specific LLM
 
 import { callLLM } from "../services/llm";
 
