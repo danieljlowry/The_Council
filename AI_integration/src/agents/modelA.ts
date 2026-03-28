@@ -28,5 +28,5 @@ export async function modelA(input: string) {
 
     `
 
-    return callLLM('model-A', prompt);
+    return callLLM('model-a', prompt);
 }

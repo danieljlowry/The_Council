@@ -1,6 +1,7 @@
 // File for Model B
-// 
-// Note: Model A is not restricted to a specific LLM
+// Takes Model A's response as input and instructs LLM to expand on it 
+// Provides more detail and depth to the response, without introducing new ideas into the answer provided by Model A
+// Note: Model C is not restricted to a specific LLM
 
 import { callLLM } from "../services/llm";
 
@@ -19,5 +20,5 @@ export async function modelB(input: string) {
 
     `
 
-    return callLLM('model-B', prompt);
+    return callLLM('model-b', prompt);
 }
