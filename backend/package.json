@@ -1,0 +1,21 @@
+{
+  "name": "the-council-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Database (Prisma) and future API — no UI",
+  "scripts": {
+    "db:generate": "npx prisma generate",
+    "db:ping": "sh -c 'echo \"SELECT 1 AS ok;\" | npx prisma db execute --stdin --schema prisma/schema.prisma'",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "db:ping:ipv4": "NODE_OPTIONS=--dns-result-order=ipv4first sh -c 'echo \"SELECT 1 AS ok;\" | npx prisma db execute --stdin --schema prisma/schema.prisma'"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "prisma": "^6.19.0",
+    "typescript": "^5"
+  }
+}
