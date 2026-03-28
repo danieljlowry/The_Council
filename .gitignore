@@ -1,2 +1,25 @@
 .DS_Store
+
+# Backend -- Prisma / future API (secrets)
+backend/node_modules
+backend/.env
+backend/.env.local
+
+# Frontend -- Next.js
+frontend/node_modules
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env*.local
+
+# Legacy / accidental root installs
+/node_modules
+/.next/
+/out/
 .env
+.env.local
+/generated/prisma
+
+# AI skills (agent-skills.io)
+.agents/
+skills-lock.json
