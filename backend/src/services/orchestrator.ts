@@ -1,101 +1,143 @@
-// This file is the core engine of the debate system, responsible for orchestrating the interactions between the different models (Model A, Model B, Model C) and the LLM API. It defines the main logic for how the models interact with each other and how they process the user's input to generate a response.
+// Core debate engine: models A→D per round; cycle 1 explores, cycle 2 refines using cycle 1 outputs.
 
 import { modelA } from "../agents/modelA";
 import { modelB } from "../agents/modelB";
 import { modelC } from "../agents/modelC";
 import { modelD } from "../agents/modelD";
 
-// Imports relevant functions for saving conversations, messages, and cycles to the database
+import {
+    DEFAULT_MODEL_LINEUP,
+    type CycleCount,
+    type CyclePhase,
+    type ModelLineup,
+} from "../types/debate";
+
 import {
     createConversation,
     createRound,
-    saveMessage,
     saveCycle,
-    updateCouncilSummary
+    saveMessage,
+    saveUserMessage,
+    updateCouncilAgentModels,
 } from "./persistence";
+
+type EvaluatorJson = {
+    summary?: string;
+    issues?: unknown;
+    evaluation?: string;
+    suggested_improvements?: unknown;
+};
+
+function buildCycle2ModelAInput(
+    originalPrompt: string,
+    cycle1ModelC: string,
+    d1: EvaluatorJson
+): string {
+    return `
+USER'S ORIGINAL QUESTION:
+${originalPrompt}
+
+FINAL SYNTHESIZED ANSWER FROM CYCLE 1 (Model C — reinforce and improve this, do not discard it):
+${cycle1ModelC}
+
+EVALUATION FROM CYCLE 1 (Model D):
+Summary: ${d1.summary ?? ""}
+Issues: ${JSON.stringify(d1.issues ?? [])}
+Evaluation: ${d1.evaluation ?? ""}
+Suggested improvements: ${JSON.stringify(d1.suggested_improvements ?? [])}
+`.trim();
+}
+
+function parseModelDResponse(raw: string): EvaluatorJson {
+    try {
+        return JSON.parse(raw) as EvaluatorJson;
+    } catch (parseError) {
+        console.error("Failed to parse Model D response as JSON:", raw);
+        throw new Error(`Model D response is not valid JSON: ${raw}`);
+    }
+}
 
 export async function orchestrateDebate(
     userId: string,
     title: string,
-    prompt: string
+    prompt: string,
+    cycleCount: CycleCount = 1,
+    lineup: ModelLineup = DEFAULT_MODEL_LINEUP
 ) {
-    // Create new council (debate session) in database
     const { council, round1 } = await createConversation(userId, title, prompt);
 
-    // Cycle 1 - Initial Response Cycle
+    await updateCouncilAgentModels(council.id, lineup);
 
-    // Track message sequence within the round
     let sequence = 1;
+    await saveUserMessage(council.id, round1.id, sequence++, prompt);
 
-    const a1 = await modelA(prompt); // Get response from Model A using user's prompt as input
-    await saveMessage(council.id, round1.id, "A", sequence++, a1); // Save Model A's response to database
+    const runRound = async (
+        roundId: string,
+        phase: CyclePhase,
+        modelAInput: string,
+        /** Cycle 1 Model B text — passed into Model C in refinement so it can verify sources from exploration. */
+        cycle1ModelBOut?: string
+    ) => {
+        const aOut = await modelA(modelAInput, phase, lineup.A);
+        await saveMessage(council.id, roundId, "A", sequence++, aOut);
 
-    const b1 = await modelB(prompt, a1); // B needs original question + A's output
-    await saveMessage(council.id, round1.id, "B", sequence++, b1); // Save Model B's response to database
+        const bOut = await modelB(prompt, aOut, phase, lineup.B);
+        await saveMessage(council.id, roundId, "B", sequence++, bOut);
 
-    const c1 = await modelC(prompt, b1); // C needs original question + B's output
-    await saveMessage(council.id, round1.id, "C", sequence++, c1); // Save Model C's response to database
+        const cOut = await modelC(
+            prompt,
+            bOut,
+            phase,
+            phase === "refinement" ? cycle1ModelBOut : undefined,
+            lineup.C
+        );
+        await saveMessage(council.id, roundId, "C", sequence++, cOut);
 
-    const d1Response = await modelD(prompt, c1);
-    let d1;
-    try {
-        d1 = JSON.parse(d1Response);
-    } catch (parseError) {
-        console.error('Failed to parse Model D response as JSON:', d1Response);
-        throw new Error(`Model D response is not valid JSON: ${d1Response}`);
+        const dRaw = await modelD(prompt, cOut, phase, lineup.D);
+        const dOut = parseModelDResponse(dRaw);
+        await saveMessage(council.id, roundId, "D", sequence++, dOut);
+
+        await saveCycle(council.id, roundId, dOut);
+
+        return { aOut, bOut, cOut, dOut };
+    };
+
+    const cycle1 = await runRound(round1.id, "exploration", prompt);
+
+    if (cycleCount === 1) {
+        return {
+            councilId: council.id,
+            cyclesCompleted: 1 as const,
+            modelsUsed: lineup,
+            totalTranscriptMessages: sequence - 1,
+            final_answer: cycle1.cOut,
+            final_summary: cycle1.dOut.summary,
+            final_evaluation: cycle1.dOut.evaluation,
+            improvements: cycle1.dOut.suggested_improvements,
+        };
     }
-    await saveMessage(council.id, round1.id, "D", sequence++, d1); // Save Model D's response to database
 
-    // Complete cycle 1 and store summary
-    await saveCycle(council.id, round1.id, d1);
+    const round2Record = await createRound(council.id, 2);
+    const refinementInput = buildCycle2ModelAInput(
+        prompt,
+        cycle1.cOut,
+        cycle1.dOut
+    );
+    const cycle2 = await runRound(
+        round2Record.id,
+        "refinement",
+        refinementInput,
+        cycle1.bOut
+    );
 
     return {
         councilId: council.id,
-        final_answer: c1,
-        final_summary: d1.summary,
-        final_evaluation: d1.evaluation,
-        improvements: d1.suggested_improvements
-    }
-
-/* 
-    // Cycle 2 - Refinement Cycle
-
-    // "OriginalPrompt" = user's original prompt
-    const refinedInput = `
-    
-    OriginalPrompt: ${prompt}
-
-    PreviousCycleSummary: ${d1.summary}
-    Issues: ${JSON.stringify(d1.issues)}
-    Evaluation: ${d1.evaluation}
-    SuggestedImprovements: ${JSON.stringify(d1.suggested_improvements)}
-    
-    `
-    const a2 = await modelA(refinedInput); // Get response from Model A using refined input as input
-    await saveMessage(conversation.id, "A", 2, a2); // Save Model A's response to database
-
-    const b2 = await modelB(prompt, a2);
-    await saveMessage(conversation.id, "B", 2, b2); // Save Model B's response to database
-
-    const c2 = await modelC(prompt, b2);
-    await saveMessage(conversation.id, "C", 2, c2); // Save Model C's response to database
-
-    const d2 = JSON.parse(await modelD(prompt, c2));
-    await saveCycle(conversation.id, 2, d2); // Save Model D's response to database
-
-
-    // Final output after 2 cycles of debate, includes:
-    // final answer from Model C, and final summary, evaluation, and suggested improvements from Model D
-    return {
-
-        final_answer: c2,
-        final_summary: d2.summary,
-        final_evaluation: d2.evaluation,
-        improvements: d2.suggested_improvements
-
-    }
-*/
-
-
+        cyclesCompleted: 2 as const,
+        modelsUsed: lineup,
+        totalTranscriptMessages: sequence - 1,
+        final_answer: cycle2.cOut,
+        final_summary: cycle2.dOut.summary,
+        final_evaluation: cycle2.dOut.evaluation,
+        improvements: cycle2.dOut.suggested_improvements,
+    };
 }
-

@@ -1,18 +1,21 @@
 // File for Model A
-// This model is designed to generate the FIRST response from the user's prompt
-// Model A is used as the basis or foundation of the debate, for both 'cycles'
+// Generalist: cycle 1 explores the prompt; cycle 2 reinforces using prior cycle + evaluator feedback.
 // Note: Model A is not restricted to a specific LLM
 
 import { callLLM } from "../services/llm";
+import type { CyclePhase } from "../types/debate";
 
-export async function modelA(input: string) {
+export async function modelA(
+    input: string,
+    phase: CyclePhase = "exploration",
+    openRouterModelId: string
+) {
 
-    // Prompt for Model A, instructs LLM on how to respond to user's input
-    // Note: specifically requires backticks (`) for multi-line string and interpolation of input variable
-    const prompt = ` 
+    const explorationPrompt = ` 
     
     You are a generalist AI. Also known as a "jack of all trades". 
-    Your task is to generate the FIRST response to the user's prompt, which will be used as the basis for a debate.
+    This is the EXPLORATION cycle: generate an initial response that explores the user's prompt from multiple angles.
+    It will be used as the basis for a multi-model debate—be substantive but open to later refinement.
 
     return JSON:
     {
@@ -26,7 +29,30 @@ export async function modelA(input: string) {
     Input:
     ${input}
 
-    `
+    `;
 
-    return callLLM('openai/gpt-3.5-turbo', prompt);
+    const refinementPrompt = ` 
+    
+    You are a generalist AI. This is the REFINEMENT cycle (second pass).
+    Your task is to reinforce and improve the substance of the prior round using the evaluator's feedback below.
+    Do not ignore the original question—strengthen the answer, address weaknesses, and preserve what already worked.
+    You may tighten scope but do not restart from zero.
+
+    return JSON:
+    {
+
+        "answer": "...",
+        "assumptions": [],
+        "uncertainties": []
+
+    }
+
+    Context and instructions (follow closely):
+    ${input}
+
+    `;
+
+    const prompt = phase === "refinement" ? refinementPrompt : explorationPrompt;
+
+    return callLLM(openRouterModelId, prompt);
 }

@@ -1,15 +1,26 @@
 // File for Model D
-// Takes Model C's response as input
-// 
+// Evaluator / summarizer: cycle 1 closes exploration; cycle 2 closes on how well the answer was reinforced.
 // Note: Model D is not restricted to a specific LLM
 
 import { callLLM } from "../services/llm";
+import type { CyclePhase } from "../types/debate";
 
-export async function modelD(originalPrompt: string, modelCOutput: string) {
+export async function modelD(
+    originalPrompt: string,
+    modelCOutput: string,
+    phase: CyclePhase = "exploration",
+    openRouterModelId: string
+) {
+
+    const modeLine =
+        phase === "refinement"
+            ? "This is the REFINEMENT cycle: assess how well the answer consolidates prior work, whether remaining gaps are acceptable, and what final polish (if any) is still needed."
+            : "This is the EXPLORATION cycle: assess strengths, gaps, and improvement opportunities for the next pass if any.";
 
     const prompt = ` 
     
     You are a critical evaluator and summarizer AI.
+    ${modeLine}
     Your task is to analyze the answer provided by Model C under the following criteria:
     1. Summarize the answer provided by Model C in a concise and clear manner.
     2. Identify any issues or weaknesses in the answer provided by Model C, and provide a critical evaluation of the answer.
@@ -35,5 +46,5 @@ export async function modelD(originalPrompt: string, modelCOutput: string) {
 
     `
 
-    return callLLM('qwen/qwen3-235b-a22b-2507', prompt);
+    return callLLM(openRouterModelId, prompt);
 }
