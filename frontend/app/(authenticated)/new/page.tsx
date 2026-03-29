@@ -278,7 +278,7 @@ export default function SetupPage() {
                 </span>
               </label>
               <div className="flex gap-3">
-                {[1, 2, 3].map((num) => (
+                {[1, 2].map((num) => (
                   <button
                     key={num}
                     onClick={() => setCycles(num)}
