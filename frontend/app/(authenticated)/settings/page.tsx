@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Bell, MoonStar, Shield, SunMedium, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -124,12 +125,21 @@ export default function SettingsPage() {
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {description}
               </p>
-              <button
-                type="button"
-                className="mt-5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-[#C2410C] hover:text-[#C2410C] dark:hover:border-[#EA580C] dark:hover:text-[#FB923C]"
-              >
-                Coming Soon
-              </button>
+              {title === "Profile" ? (
+                <Link
+                  href="/settings/profile"
+                  className="mt-5 inline-flex rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-[#C2410C] hover:text-[#C2410C] dark:hover:border-[#EA580C] dark:hover:text-[#FB923C]"
+                >
+                  Open Profile
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="mt-5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-[#C2410C] hover:text-[#C2410C] dark:hover:border-[#EA580C] dark:hover:text-[#FB923C]"
+                >
+                  Coming Soon
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Download,
@@ -27,9 +26,13 @@ import { createClient } from "@/utils/supabase/client";
 
 interface SidebarProps {
   councils?: { id: string; title: string }[];
+  profile?:
+    | {
+        username: string;
+        fullName: string | null;
+      }
+    | null;
 }
-
-const imgShape = "/images/profile.png";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -38,7 +41,22 @@ function canDeleteCouncilId(id: string): boolean {
   return UUID_RE.test(id);
 }
 
-export function Sidebar({ councils }: SidebarProps) {
+function deriveInitials(fullName: string | null | undefined, username: string): string {
+  const source = fullName?.trim() || username.trim();
+  const parts = source.split(/\s+/).filter(Boolean);
+
+  if (parts.length === 0) {
+    return "PO";
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+}
+
+export function Sidebar({ councils, profile }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const chats = councils ?? [];
@@ -46,6 +64,14 @@ export function Sidebar({ councils }: SidebarProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [downloadBusyId, setDownloadBusyId] = useState<string | null>(null);
+  const isSettingsRoute =
+    pathname === "/settings" || pathname.startsWith("/settings/");
+  const displayName =
+    profile?.fullName?.trim() || profile?.username || "Prompt Odyssey User";
+  const usernameLabel = profile?.username
+    ? `@${profile.username}`
+    : "Profile unavailable";
+  const initials = deriveInitials(profile?.fullName, profile?.username ?? "");
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -290,7 +316,7 @@ export function Sidebar({ councils }: SidebarProps) {
           onClick={handleSettingsClick}
           className={cn(
             "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all",
-            pathname === "/settings"
+            isSettingsRoute
               ? "border-[#C2410C]/20 bg-[#C2410C]/8 text-[#C2410C] shadow-sm dark:border-[#EA580C]/30 dark:bg-[#EA580C]/15 dark:text-[#FB923C]"
               : "border-transparent bg-card text-foreground hover:border-border hover:bg-accent/50",
           )}
@@ -311,17 +337,26 @@ export function Sidebar({ councils }: SidebarProps) {
           </div>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <Image
-            src={imgShape}
-            alt="User"
-            width={32}
-            height={32}
-            className="h-8 w-8 shrink-0 rounded-full bg-card object-cover"
-          />
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#C2410C]/10 text-xs font-semibold text-[#C2410C] dark:bg-[#EA580C]/15 dark:text-[#FB923C]"
+            aria-hidden="true"
+          >
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-foreground">
+              {displayName}
+            </p>
+            <p className="truncate text-[11px] leading-tight text-muted-foreground">
+              {usernameLabel}
+            </p>
+          </div>
           <button
+            type="button"
             onClick={handleLogout}
-            className="flex-1 cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-red-700 active:bg-red-800"
+            className="shrink-0 cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700 active:bg-red-800"
+            aria-label="Log out"
           >
             Log Out
           </button>

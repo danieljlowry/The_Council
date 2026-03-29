@@ -7,6 +7,7 @@ import type {
   CouncilStatus,
   DebateMessage,
   DebateMessageAuthor,
+  Profile,
 } from "@/lib/types";
 
 /** PostgREST errors are often plain objects; UI must not rely on `instanceof Error` only. */
@@ -125,6 +126,15 @@ type DebateMessageRow = {
   created_at: string;
 };
 
+type ProfileRow = {
+  id: string;
+  email: string | null;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+};
+
 type CouncilWithRelationsRow = CouncilRow & {
   council_agents?: CouncilAgentRow[] | null;
   council_rounds?: (CouncilRoundRow & {
@@ -152,6 +162,19 @@ type SaveDebateMessageInput = {
   sequence: number;
   content: string;
 };
+
+type UpdateProfileInput = Partial<Pick<Profile, "fullName" | "username">>;
+
+function mapProfileRow(row: ProfileRow): Profile {
+  return {
+    id: row.id,
+    email: row.email,
+    username: row.username,
+    fullName: row.full_name,
+    avatarUrl: row.avatar_url,
+    createdAt: row.created_at,
+  };
+}
 
 function mapCouncil(row: CouncilRow): Council {
   return {
@@ -202,6 +225,75 @@ function mapMessage(row: DebateMessageRow): DebateMessage {
     content: row.content,
     createdAt: row.created_at,
   };
+}
+
+export async function getProfile(): Promise<Profile> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    throwSupabase("getProfile auth.getUser", userError);
+  }
+
+  if (!user) {
+    throw new Error("You must be signed in.");
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    throwSupabase("getProfile profiles lookup", error);
+  }
+
+  return mapProfileRow(data as ProfileRow);
+}
+
+export async function updateProfile(
+  fields: UpdateProfileInput,
+): Promise<Profile> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    throwSupabase("updateProfile auth.getUser", userError);
+  }
+
+  if (!user) {
+    throw new Error("You must be signed in.");
+  }
+
+  const updatePayload: Record<string, string | null> = {};
+
+  if (fields.fullName !== undefined) {
+    updatePayload.full_name = fields.fullName;
+  }
+
+  if (fields.username !== undefined) {
+    updatePayload.username = fields.username;
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .update(updatePayload)
+    .eq("id", user.id)
+    .select("*")
+    .single();
+
+  if (error) {
+    throwSupabase("updateProfile profiles update", error);
+  }
+
+  return mapProfileRow(data as ProfileRow);
 }
 
 export async function listCouncils(): Promise<

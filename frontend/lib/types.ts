@@ -5,8 +5,10 @@ export type DebateMessageAuthor = "USER" | "AGENT";
 export interface Profile {
   id: string;
   email: string | null;
+  username: string;
   fullName: string | null;
   avatarUrl: string | null;
+  createdAt: string;
 }
 
 export interface Council {
