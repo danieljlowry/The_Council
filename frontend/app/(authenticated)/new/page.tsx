@@ -12,6 +12,7 @@ import type { AgentSlot } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const NON_CROWN_SLOTS: AgentSlot[] = ["AGENT_B", "AGENT_C", "AGENT_D"];
+const MAX_MODELS = NON_CROWN_SLOTS.length + 1;
 
 export default function SetupPage() {
   const router = useRouter();
@@ -22,15 +23,24 @@ export default function SetupPage() {
   const [submitError, setSubmitError] = useState("");
 
   const isInvalid = question.trim().length > 5 && !question.includes("?");
-  const isValid = question.trim().length > 5 && !isInvalid && selectedModels.length >= 3;
+  const isValid =
+    question.trim().length > 5 &&
+    !isInvalid &&
+    selectedModels.length >= 3 &&
+    selectedModels.length <= MAX_MODELS;
 
   const toggleModel = (id: string) => {
-    if (selectedModels.includes(id)) {
-      setSelectedModels(selectedModels.filter((modelId) => modelId !== id));
-      return;
-    }
+    setSelectedModels((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((modelId) => modelId !== id);
+      }
 
-    setSelectedModels((prev) => [...prev, id]);
+      if (prev.length >= MAX_MODELS) {
+        return prev;
+      }
+
+      return [...prev, id];
+    });
   };
 
   const handleStart = async () => {
@@ -111,7 +121,7 @@ export default function SetupPage() {
             {orderedModels.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background px-4 py-12 transition-colors">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Select at least 3 LLMs to build your council sequence.
+                  Select 3 or 4 LLMs to build your council sequence.
                 </p>
               </div>
             ) : (
@@ -175,21 +185,29 @@ export default function SetupPage() {
               <span className="text-xs font-medium text-muted-foreground">
                 Available Models:
               </span>
+              <span className="text-xs text-muted-foreground/80">
+                Choose up to {MAX_MODELS}.
+              </span>
               <div className="flex flex-wrap items-center gap-2">
                 {AVAILABLE_MODELS.map((model) => {
                   const selectedIndex = selectedModels.indexOf(model.id);
                   const isSelected = selectedIndex !== -1;
+                  const isDisabled =
+                    !isSelected && selectedModels.length >= MAX_MODELS;
                   const orderNumber = selectedIndex + 1;
 
                   return (
                     <button
                       key={model.id}
                       onClick={() => toggleModel(model.id)}
+                      disabled={isDisabled}
                       className={cn(
                         "relative flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                         isSelected
                           ? "border-[#002D72] bg-[#002D72] pl-2 text-white"
                           : "border-border bg-card text-muted-foreground hover:bg-accent",
+                        isDisabled &&
+                          "cursor-not-allowed opacity-50 hover:bg-card",
                       )}
                       type="button"
                     >

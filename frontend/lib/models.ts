@@ -27,4 +27,11 @@ export const AVAILABLE_MODELS = [
     img: "/images/Gemini.png",
     modelKey: "google/gemini-pro",
   },
+  {
+    id: "qwen",
+    name: "Qwen",
+    role: "Analyst",
+    img: "/images/3dqwen.png",
+    modelKey: "qwen/qwen-2.5",
+  },
 ] as const;

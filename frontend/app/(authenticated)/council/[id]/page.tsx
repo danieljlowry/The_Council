@@ -34,6 +34,10 @@ const getFakeMessage = (modelId: string, cycle: number) => {
       return "Let's reframe: 'Speed of learning' over 'Speed of shipping'. If an MVP is too unreliable, the data you gather is flawed. Build a 'reliable enough' prototype to test the core hypothesis fast.";
     }
 
+    if (modelId === "qwen") {
+      return "The key variable is downside risk. Move fast where mistakes are cheap and reversible, but engineer reliability early anywhere failures damage trust, data integrity, or retention.";
+    }
+
     return "Synthesizing the above: Speed is the engine, but basic reliability is the steering wheel. Both are needed.";
   }
 
@@ -47,6 +51,10 @@ const getFakeMessage = (modelId: string, cycle: number) => {
 
   if (modelId === "llama") {
     return "Final synthesis: Early-stage startups shouldn't choose between speed and reliability. Instead, they should relentlessly pursue 'Speed of Learning', which requires a minimum viable reliability. Ship fast, but only when the core mechanism is stable enough to yield true user feedback.";
+  }
+
+  if (modelId === "qwen") {
+    return "A useful operating rule is this: optimize aggressively for reversible experiments, and harden the irreversible paths. That gives the startup learning speed without gambling away user trust.";
   }
 
   return "Final synthesis: Optimize for the velocity of validated learning.";
