@@ -9,6 +9,72 @@ import type {
   DebateMessageAuthor,
 } from "@/lib/types";
 
+/** PostgREST errors are often plain objects; UI must not rely on `instanceof Error` only. */
+export function formatSupabaseError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (error && typeof error === "object") {
+    const e = error as Record<string, unknown>;
+    const parts = [e.message, e.code, e.details, e.hint].filter(
+      (x): x is string => typeof x === "string" && x.length > 0,
+    );
+    if (parts.length > 0) {
+      return parts.join(" — ");
+    }
+  }
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
+function throwSupabase(context: string, error: unknown): never {
+  console.error(`[${context}]`, error);
+  throw new Error(formatSupabaseError(error));
+}
+
+/** Fastify orchestrator URL. Defaults to local API; set in production. */
+function backendApiBase(): string {
+  return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(
+    /\/$/,
+    "",
+  );
+}
+
+async function authorizedHeaders(): Promise<HeadersInit> {
+  const supabase = createClient();
+
+  // Refresh so access_token is valid for the API (getSession alone can return an expired JWT).
+  const { data: refreshed, error: refreshError } =
+    await supabase.auth.refreshSession();
+
+  let session = refreshed.session;
+  if (refreshError || !session?.access_token) {
+    const {
+      data: { session: fallback },
+      error: getError,
+    } = await supabase.auth.getSession();
+    if (getError) {
+      throw getError;
+    }
+    session = fallback;
+  }
+
+  const token = session?.access_token;
+  if (!token) {
+    throw new Error("You must be signed in.");
+  }
+
+  return { Authorization: `Bearer ${token}` };
+}
+
+async function authorizedJsonHeaders(): Promise<HeadersInit> {
+  const base = await authorizedHeaders();
+  return { ...base, "Content-Type": "application/json" };
+}
+
 type ListCouncilRow = {
   id: string;
   title: string;
@@ -200,26 +266,51 @@ export async function createCouncil(
   } = await supabase.auth.getUser();
 
   if (userError) {
-    throw userError;
+    throwSupabase("createCouncil auth.getUser", userError);
   }
 
   if (!user) {
     throw new Error("User must be authenticated to create a council.");
   }
 
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    throwSupabase("createCouncil profiles lookup", profileError);
+  }
+
+  if (!profile) {
+    console.error("[createCouncil] Missing profiles row for user", user.id);
+    throw new Error(
+      "Your account has no profile row yet. Councils require a matching row in public.profiles (same id as auth). Run the handle_new_user trigger in Supabase (see backend/supabase/) or insert a profile for your user.",
+    );
+  }
+
+  // DB migration may add gen_random_uuid() defaults; until then PostgREST requires
+  // explicit ids (Prisma @default(uuid()) only applies when using Prisma Client).
+  const newCouncilId = crypto.randomUUID();
+  const now = new Date().toISOString();
+
   const { data: councilData, error: councilError } = await supabase
     .from("councils")
     .insert({
+      id: newCouncilId,
       owner_id: user.id,
       title: data.title,
       primary_prompt: data.primaryPrompt,
       status: "DRAFT",
+      created_at: now,
+      updated_at: now,
     })
     .select("id")
     .single();
 
   if (councilError) {
-    throw councilError;
+    throwSupabase("createCouncil councils insert", councilError);
   }
 
   const councilId = (councilData as { id: string }).id;
@@ -229,6 +320,7 @@ export async function createCouncil(
   // multi-table transaction across these Supabase client calls.
   const { error: agentsError } = await supabase.from("council_agents").insert(
     data.agents.map((agent) => ({
+      id: crypto.randomUUID(),
       council_id: councilId,
       slot: agent.slot,
       display_name: agent.displayName,
@@ -238,18 +330,19 @@ export async function createCouncil(
   );
 
   if (agentsError) {
-    throw agentsError;
+    throwSupabase("createCouncil council_agents insert", agentsError);
   }
 
   const { error: roundsError } = await supabase.from("council_rounds").insert(
     Array.from({ length: data.cycleCount }, (_, index) => ({
+      id: crypto.randomUUID(),
       council_id: councilId,
       number: index + 1,
     })),
   );
 
   if (roundsError) {
-    throw roundsError;
+    throwSupabase("createCouncil council_rounds insert", roundsError);
   }
 
   return { id: councilId };
@@ -262,6 +355,7 @@ export async function saveDebateMessage(
   const { data: messageData, error } = await supabase
     .from("debate_messages")
     .insert({
+      id: crypto.randomUUID(),
       council_id: data.councilId,
       round_id: data.roundId,
       council_agent_id: data.councilAgentId,
@@ -300,7 +394,7 @@ export async function startCouncilRound(
 
   const { error: councilError } = await supabase
     .from("councils")
-    .update({ status: "ACTIVE" })
+    .update({ status: "ACTIVE", updated_at: new Date().toISOString() })
     .eq("id", councilId)
     .eq("status", "DRAFT");
 
@@ -321,6 +415,7 @@ export async function completeCouncil(
     .update({
       status: "COMPLETED",
       final_summary: finalSummary,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", councilId);
 
@@ -329,14 +424,57 @@ export async function completeCouncil(
   }
 }
 
+/** Deletes the council and cascaded rows (agents, rounds, messages) for the signed-in owner. */
+export async function deleteCouncil(councilId: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("councils").delete().eq("id", councilId);
+
+  if (error) {
+    throwSupabase("deleteCouncil", error);
+  }
+}
+
 export async function triggerCouncilRun(councilId: string): Promise<void> {
-  // TODO: Backend team implements this endpoint (OpenRouter orchestration)
-  const response = await fetch(`/api/council/${councilId}/run`, {
-    method: "POST",
-  });
+  const headers = await authorizedJsonHeaders();
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `${backendApiBase()}/council/${encodeURIComponent(councilId)}/run`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({}),
+      },
+    );
+  } catch (err) {
+    const base = backendApiBase();
+    const msg = err instanceof Error ? err.message : String(err);
+    const networkFail =
+      /failed to fetch|load failed|networkerror/i.test(msg) ||
+      err instanceof TypeError;
+    const hint = networkFail
+      ? ` Check that the API is running (${base}) — e.g. npm run api:dev from the repo root.`
+      : "";
+    throw new Error(`${msg}${hint}`.trim());
+  }
 
   if (!response.ok) {
-    throw new Error(`Failed to trigger council run: ${response.status}`);
+    const text = await response.text();
+    let detail = `Request failed (${response.status})`;
+    try {
+      const j = JSON.parse(text) as { error?: string };
+      if (typeof j.error === "string" && j.error.length > 0) {
+        detail = j.error;
+      } else if (text.trim()) {
+        detail = `${detail}: ${text.slice(0, 500)}`;
+      }
+    } catch {
+      if (text.trim()) {
+        detail = `${detail}: ${text.slice(0, 500)}`;
+      }
+    }
+    throw new Error(detail);
   }
 }
 
@@ -344,14 +482,21 @@ export async function pollCouncilMessages(
   councilId: string,
   afterSequence: number,
 ): Promise<DebateMessage[]> {
-  // TODO: Backend team implements this endpoint
+  const headers = await authorizedHeaders();
+  const params = new URLSearchParams({
+    after: String(afterSequence),
+  });
+
   const response = await fetch(
-    `/api/council/${councilId}/messages?after=${afterSequence}`,
+    `${backendApiBase()}/debate/${encodeURIComponent(councilId)}/messages?${params}`,
+    { headers },
   );
 
   if (!response.ok) {
     throw new Error(`Failed to poll messages: ${response.status}`);
   }
 
-  return (await response.json()) as DebateMessage[];
+  const data = (await response.json()) as { messages: DebateMessage[] };
+
+  return data.messages ?? [];
 }

@@ -6,13 +6,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Textarea } from "@/components/Input";
-import { createCouncil } from "@/lib/api";
+import { createCouncil, formatSupabaseError } from "@/lib/api";
 import { AVAILABLE_MODELS } from "@/lib/models";
 import type { AgentSlot } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const NON_CROWN_SLOTS: AgentSlot[] = ["AGENT_B", "AGENT_C", "AGENT_D"];
-const MAX_MODELS = NON_CROWN_SLOTS.length + 1;
+/** Relay order: index 0 = Model A (Crown) … index 3 = Model D (evaluator). */
+const RELAY_ORDER_SLOTS: AgentSlot[] = [
+  "CROWN",
+  "AGENT_B",
+  "AGENT_C",
+  "AGENT_D",
+];
+const MAX_MODELS = RELAY_ORDER_SLOTS.length;
 
 export default function SetupPage() {
   const router = useRouter();
@@ -48,18 +54,14 @@ export default function SetupPage() {
       return;
     }
 
-    const resolvedCrown = selectedModels[0];
-    let slotIndex = 0;
-
-    const agents = selectedModels.map((modelId) => {
+    const agents = selectedModels.map((modelId, index) => {
       const model = AVAILABLE_MODELS.find((entry) => entry.id === modelId);
 
       if (!model) {
         throw new Error(`Unknown model selected: ${modelId}`);
       }
 
-      const slot =
-        modelId === resolvedCrown ? "CROWN" : NON_CROWN_SLOTS[slotIndex++];
+      const slot = RELAY_ORDER_SLOTS[index];
 
       return {
         slot,
@@ -82,8 +84,9 @@ export default function SetupPage() {
 
       router.push(`/council/${result.id}`);
     } catch (error) {
+      console.error("Launch council failed:", error);
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to create council.",
+        error instanceof Error ? error.message : formatSupabaseError(error),
       );
     } finally {
       setIsSubmitting(false);
@@ -100,7 +103,7 @@ export default function SetupPage() {
         <div className="flex w-full max-w-3xl flex-col gap-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Configure Council
+              Configure your council
             </h1>
             <p className="mt-2 text-muted-foreground">
               Select the models, set the order, and define the topic for
@@ -136,7 +139,7 @@ export default function SetupPage() {
                         className={cn(
                           "group relative flex w-36 flex-col items-center rounded-xl border-2 p-4 transition-all",
                           isCrowned
-                            ? "border-[#002D72] bg-[#002D72]/5 shadow-sm"
+                            ? "border-[#C2410C] bg-[#C2410C]/5 shadow-sm"
                             : "border-border bg-card hover:border-muted-foreground/40",
                         )}
                       >
@@ -144,7 +147,7 @@ export default function SetupPage() {
                           {orderNumber}
                         </div>
                         {isCrowned && (
-                          <div className="absolute -top-3 z-10 rounded-full bg-[#002D72] p-1 text-white shadow-md">
+                          <div className="absolute -top-3 z-10 rounded-full bg-[#C2410C] p-1 text-white shadow-md">
                             <Crown className="h-4 w-4" />
                           </div>
                         )}
@@ -175,7 +178,7 @@ export default function SetupPage() {
             )}
 
             {selectedModels.length > 0 && selectedModels.length < 3 && (
-              <div className="flex items-center gap-2 rounded-lg border border-[#F59E0B]/20 bg-[#F59E0B]/10 p-3 text-sm text-[#B45309]">
+              <div className="flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 p-3 text-sm text-amber-950 dark:text-amber-200">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <p>Choose at least 3 LLMs to create a council.</p>
               </div>
@@ -204,7 +207,7 @@ export default function SetupPage() {
                       className={cn(
                         "relative flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                         isSelected
-                          ? "border-[#002D72] bg-[#002D72] pl-2 text-white"
+                          ? "border-[#C2410C] bg-[#C2410C] pl-2 text-white"
                           : "border-border bg-card text-muted-foreground hover:bg-accent",
                         isDisabled &&
                           "cursor-not-allowed opacity-50 hover:bg-card",
@@ -212,7 +215,7 @@ export default function SetupPage() {
                       type="button"
                     >
                       {isSelected && (
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#002D72]">
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#C2410C]">
                           {orderNumber}
                         </span>
                       )}
@@ -241,11 +244,11 @@ export default function SetupPage() {
               />
 
               {isInvalid && (
-                <div className="mt-2 flex items-start gap-2 rounded-lg border border-[#F59E0B]/20 bg-[#F59E0B]/10 p-3 text-[#B45309]">
+                <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 p-3 text-amber-950 dark:text-amber-200">
                   <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
                   <div>
                     <p className="text-sm font-semibold">
-                      The Council only starts when you ask a question.
+                      Your council only starts when you ask a question.
                     </p>
                     <p className="mt-0.5 text-xs">
                       Please rewrite your prompt as a question ending with
@@ -272,7 +275,7 @@ export default function SetupPage() {
                       "Should early-stage startups prioritize speed or reliability when building their MVP?",
                     )
                   }
-                  className="text-xs text-[#002D72] hover:underline dark:text-muted-foreground"
+                  className="text-xs text-[#C2410C] hover:underline dark:text-muted-foreground"
                   type="button"
                 >
                   Use valid example
@@ -280,7 +283,7 @@ export default function SetupPage() {
                 <span className="text-muted-foreground">|</span>
                 <button
                   onClick={() => setQuestion("Build me a productivity app")}
-                  className="text-xs text-[#002D72] hover:underline dark:text-muted-foreground"
+                  className="text-xs text-[#C2410C] hover:underline dark:text-muted-foreground"
                   type="button"
                 >
                   Use invalid example
@@ -303,7 +306,7 @@ export default function SetupPage() {
                     className={cn(
                       "flex-1 rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors",
                       cycles === num
-                        ? "border-[#002D72] bg-[#002D72]/5 text-[#002D72] dark:border-muted-foreground/45 dark:text-muted-foreground"
+                        ? "border-[#C2410C] bg-[#C2410C]/5 text-[#C2410C] dark:border-muted-foreground/45 dark:text-muted-foreground"
                         : "border-border bg-card text-foreground hover:bg-accent",
                     )}
                     type="button"
@@ -333,7 +336,7 @@ export default function SetupPage() {
 
         <div className="flex flex-col gap-4 text-sm text-muted-foreground">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002D72]/10 text-xs font-bold text-[#002D72]">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C2410C]/10 text-xs font-bold text-[#C2410C]">
               1
             </div>
             <p>
@@ -342,7 +345,7 @@ export default function SetupPage() {
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002D72]/10 text-xs font-bold text-[#002D72]">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C2410C]/10 text-xs font-bold text-[#C2410C]">
               2
             </div>
             <p>
@@ -351,7 +354,7 @@ export default function SetupPage() {
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002D72]/10 text-xs font-bold text-[#002D72]">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C2410C]/10 text-xs font-bold text-[#C2410C]">
               3
             </div>
             <p>
@@ -360,7 +363,7 @@ export default function SetupPage() {
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002D72]/10 text-xs font-bold text-[#002D72]">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C2410C]/10 text-xs font-bold text-[#C2410C]">
               4
             </div>
             <p>

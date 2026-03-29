@@ -2,6 +2,7 @@
 
 # Backend -- Prisma / future API (secrets)
 backend/node_modules
+backend/dist
 backend/.env
 backend/.env.local
 

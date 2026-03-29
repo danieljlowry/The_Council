@@ -41,7 +41,7 @@ export default function SettingsPage() {
             Workspace Settings
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-card-foreground">
-            Tune The Council
+            Tune Prompt Odyssey
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
             This settings area is ready for account, workspace, and preference
@@ -51,7 +51,7 @@ export default function SettingsPage() {
 
         <div className="grid gap-5 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#002D72]/8 text-[#002D72] dark:bg-primary/15 dark:text-primary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#C2410C]/8 text-[#C2410C] dark:bg-[#EA580C]/15 dark:text-[#FB923C]">
               <MoonStar className="h-5 w-5" />
             </div>
             <h2 className="mt-5 text-lg font-semibold text-card-foreground">
@@ -69,8 +69,8 @@ export default function SettingsPage() {
                 className={cn(
                   "rounded-2xl border px-4 py-4 text-left transition-all",
                   activeTheme === "light"
-                    ? "border-[#002D72] bg-[#002D72]/6 shadow-sm dark:border-primary dark:bg-primary/10"
-                    : "border-border bg-background hover:border-[#002D72]/30 dark:hover:border-primary/40",
+                    ? "border-[#C2410C] bg-[#C2410C]/6 shadow-sm dark:border-[#FB923C] dark:bg-[#EA580C]/10"
+                    : "border-border bg-background hover:border-[#C2410C]/30 dark:hover:border-[#EA580C]/40",
                 )}
               >
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -88,8 +88,8 @@ export default function SettingsPage() {
                 className={cn(
                   "rounded-2xl border px-4 py-4 text-left transition-all",
                   activeTheme === "dark"
-                    ? "border-[#002D72] bg-[#002D72]/6 shadow-sm dark:border-primary dark:bg-primary/10"
-                    : "border-border bg-background hover:border-[#002D72]/30 dark:hover:border-primary/40",
+                    ? "border-[#C2410C] bg-[#C2410C]/6 shadow-sm dark:border-[#FB923C] dark:bg-[#EA580C]/10"
+                    : "border-border bg-background hover:border-[#C2410C]/30 dark:hover:border-[#EA580C]/40",
                 )}
               >
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -115,7 +115,7 @@ export default function SettingsPage() {
               key={title}
               className="rounded-2xl border border-border bg-card p-6 shadow-sm"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#002D72]/8 text-[#002D72] dark:bg-primary/15 dark:text-primary">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#C2410C]/8 text-[#C2410C] dark:bg-[#EA580C]/15 dark:text-[#FB923C]">
                 <Icon className="h-5 w-5" />
               </div>
               <h2 className="mt-5 text-lg font-semibold text-card-foreground">
@@ -126,7 +126,7 @@ export default function SettingsPage() {
               </p>
               <button
                 type="button"
-                className="mt-5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-[#002D72] hover:text-[#002D72] dark:hover:border-primary dark:hover:text-primary"
+                className="mt-5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-[#C2410C] hover:text-[#C2410C] dark:hover:border-[#EA580C] dark:hover:text-[#FB923C]"
               >
                 Coming Soon
               </button>

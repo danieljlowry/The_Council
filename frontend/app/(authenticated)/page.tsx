@@ -6,17 +6,12 @@ export default function DashboardPage() {
   return (
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-background transition-colors lg:flex-row">
       <div className="relative m-4 flex flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm transition-colors">
-        <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-bl-full bg-gradient-to-bl from-[#007749]/5 to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-tr-full bg-gradient-to-tr from-[#002D72]/5 to-transparent" />
+        <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-bl-full bg-gradient-to-bl from-[#EA580C]/5 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-tr-full bg-gradient-to-tr from-[#C2410C]/5 to-transparent" />
 
         <div className="z-10 flex w-full max-w-md flex-col items-center text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#002D72]/5 text-[#002D72]">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-[#002D72] text-xl font-bold text-white">
-              C
-            </div>
-          </div>
-          <h2 className="mb-2 text-2xl font-bold text-card-foreground">
-            Welcome to The Council
+          <h2 className="mb-2 text-[calc(1.5rem+3px)] font-bold text-card-foreground sm:text-[calc(1.5rem+4px)]">
+            Welcome to Prompt Odyssey
           </h2>
           <p className="mb-8 text-muted-foreground">
             Start a new session to submit a question and watch multiple AI
@@ -25,7 +20,7 @@ export default function DashboardPage() {
           <Link href="/new">
             <Button size="lg" className="flex items-center gap-2 shadow-sm">
               <PlusCircle className="h-5 w-5" />
-              Start New Conversation
+              Prompt New Council
             </Button>
           </Link>
         </div>

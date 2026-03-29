@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthBootstrap } from "@/components/AuthBootstrap";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "The Council",
+  title: "Prompt Odyssey",
   description: "EagleHacks 2026",
 };
 
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AuthBootstrap />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

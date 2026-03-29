@@ -40,15 +40,15 @@ export default async function AuthenticatedLayout({
   );
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-background text-foreground transition-colors md:flex-row">
-      <div className="hidden md:block">
+    <div className="flex h-dvh min-h-0 w-full flex-col overflow-hidden bg-background text-foreground transition-colors md:flex-row">
+      <div className="hidden min-h-0 md:block">
         <Sidebar councils={sidebarCouncils} />
       </div>
-      <div className="relative flex h-full w-full flex-1 overflow-hidden">
+      <div className="relative flex h-full min-h-0 w-full flex-1 overflow-hidden">
         <Suspense
           fallback={
             <div className="flex flex-1 items-center justify-center bg-background transition-colors">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#002D72] border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#C2410C] border-t-transparent" />
             </div>
           }
         >

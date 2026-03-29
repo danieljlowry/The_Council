@@ -202,3 +202,14 @@
     transform: scale(1);
   }
 }
+
+@keyframes council-session-pulse {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

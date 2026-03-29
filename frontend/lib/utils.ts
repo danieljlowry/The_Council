@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const BrandColors = {
-  blue: "#002D72",
-  green: "#007749",
+  /** Mars accent (was blue). */
+  accent: "#C2410C",
+  /** Success / resolved (green). */
+  success: "#007749",
   amber: "#F59E0B",
 };

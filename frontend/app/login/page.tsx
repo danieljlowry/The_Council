@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Eye, EyeOff, X } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { createClient } from "@/utils/supabase/client";
@@ -108,26 +109,28 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-background font-sans transition-colors">
-      <div className="absolute top-0 left-0 -z-10 h-[40vh] w-full bg-[#002D72] dark:bg-[#31435a]" />
-      <div className="absolute top-0 right-0 -z-10 h-[40vh] w-1/3 bg-gradient-to-l from-[#007749]/20 to-transparent mix-blend-overlay" />
+      <div className="absolute top-0 left-0 -z-10 h-[40vh] w-full bg-[#9A3412] dark:bg-[#431407]" />
+      <div className="absolute top-0 right-0 -z-10 h-[40vh] w-1/3 bg-gradient-to-l from-[#EA580C]/25 to-transparent mix-blend-overlay" />
 
       <div className="relative z-10 flex w-full max-w-[420px] flex-col items-center rounded-2xl border border-border bg-card p-10 shadow-xl transition-colors">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-[#002D72] text-3xl font-bold text-white shadow-md shadow-[#002D72]/20">
-          C
-        </div>
+        <BrandLogo
+          size="md"
+          priority
+          className="mb-6 shadow-md shadow-[#C2410C]/25"
+        />
 
         <div className="mb-8 flex w-full flex-col items-center text-center">
-          <h1 className="mb-2 text-2xl font-bold text-foreground">The Council</h1>
+          <h1 className="mb-2 text-2xl font-bold text-foreground">Prompt Odyssey</h1>
           <div
             className={`mt-2 rounded-full border px-5 py-2 shadow-sm transition-colors duration-300 ${
               isLogin
-                ? "border-[#002D72]/20 bg-[#002D72]/10"
+                ? "border-[#C2410C]/20 bg-[#C2410C]/10"
                 : "border-[#007749]/20 bg-[#007749]/10"
             }`}
           >
             <p
               className={`text-lg font-bold tracking-wide transition-colors duration-300 ${
-                isLogin ? "text-[#002D72]" : "text-[#007749]"
+                isLogin ? "text-[#C2410C]" : "text-[#007749]"
               }`}
             >
               {isLogin ? "Login" : "Create an Account"}
@@ -220,7 +223,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="mt-4 w-full bg-[#002D72] py-3 text-white shadow-md shadow-[#002D72]/10 transition-colors hover:bg-[#001f50]"
+            className="mt-4 w-full bg-[#C2410C] py-3 text-white shadow-md shadow-[#C2410C]/15 transition-colors hover:bg-[#7C2D12]"
             size="lg"
           >
             {isSubmitting ? "Please wait..." : isLogin ? "Login" : "Create account"}
@@ -242,7 +245,7 @@ export default function LoginPage() {
                 setIsSubmitting(false);
                 closeModal();
               }}
-              className="ml-2 font-medium text-[#007749] transition-colors hover:underline"
+              className="ml-2 font-medium text-[#C2410C] transition-colors hover:underline dark:text-[#FB923C]"
               type="button"
             >
               {isLogin ? "Sign Up" : "Login"}
