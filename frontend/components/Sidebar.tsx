@@ -57,9 +57,15 @@ export function Sidebar({ councils }: SidebarProps) {
           href="/"
           className="flex items-center gap-2 text-lg font-semibold text-[#002D72] dark:text-primary"
         >
-          <div className="w-6 h-6 rounded bg-[#002D72] text-white flex items-center justify-center">
-            C
-          </div>
+          <Image
+          src="/images/3dmainlogo.png"
+           alt="The Council logo"
+           width={24}
+           height={24}
+           className="h-6 w-6 object-contain"
+          />
+
+          
           The Council
         </Link>
 

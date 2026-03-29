@@ -1,5 +1,7 @@
 "use client";
 
+
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Eye, EyeOff, X } from "lucide-react";
@@ -112,12 +114,23 @@ export default function LoginPage() {
       <div className="absolute top-0 right-0 -z-10 h-[40vh] w-1/3 bg-gradient-to-l from-[#007749]/20 to-transparent mix-blend-overlay" />
 
       <div className="relative z-10 flex w-full max-w-[420px] flex-col items-center rounded-2xl border border-border bg-card p-10 shadow-xl transition-colors">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-[#002D72] text-3xl font-bold text-white shadow-md shadow-[#002D72]/20">
-          C
-        </div>
+        
+      <div>
+             <Image
+             src="/images/finalogo.png"
+             alt="The Council logo"
+             width={50}
+             height={50}
+             className="h-30 w-30 object-contain"
+            />
+            </div>
 
         <div className="mb-8 flex w-full flex-col items-center text-center">
+
+          {/*
           <h1 className="mb-2 text-2xl font-bold text-foreground">The Council</h1>
+          */}
+
           <div
             className={`mt-2 rounded-full border px-5 py-2 shadow-sm transition-colors duration-300 ${
               isLogin

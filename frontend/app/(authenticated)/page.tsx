@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/Button";
@@ -10,11 +11,23 @@ export default function DashboardPage() {
         <div className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-tr-full bg-gradient-to-tr from-[#002D72]/5 to-transparent" />
 
         <div className="z-10 flex w-full max-w-md flex-col items-center text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#002D72]/5 text-[#002D72]">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-[#002D72] text-xl font-bold text-white">
-              C
-            </div>
+          
+
+          <div className="mb-4">
+            <Image 
+              src="/images/3dmainlogo.png"
+              alt="The Council logo"
+              width={120}
+              height={120}
+              className="h-30 w-30 object-contain"
+            />
           </div>
+
+
+
+
+
+
           <h2 className="mb-2 text-2xl font-bold text-card-foreground">
             Welcome to The Council
           </h2>
