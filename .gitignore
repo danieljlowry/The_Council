@@ -6,6 +6,9 @@ backend/dist
 backend/.env
 backend/.env.local
 
+# Supabase dashboard SQL (run manually in Supabase; do not commit)
+backend/supabase/
+
 # Frontend -- Next.js
 frontend/node_modules
 frontend/.next/

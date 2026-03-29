@@ -286,7 +286,7 @@ export async function createCouncil(
   if (!profile) {
     console.error("[createCouncil] Missing profiles row for user", user.id);
     throw new Error(
-      "Your account has no profile row yet. Councils require a matching row in public.profiles (same id as auth). Run the handle_new_user trigger in Supabase (see backend/supabase/) or insert a profile for your user.",
+      "Your account has no profile row yet. Councils require a matching row in public.profiles (same id as auth). Run the handle_new_user trigger in the Supabase SQL editor, or insert a profile for your user. See backend/prisma/sql/create_profile_on_signup.sql for reference.",
     );
   }
 
