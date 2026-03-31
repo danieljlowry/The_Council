@@ -1,6 +1,6 @@
 # Prompt Odyssey
 
-**EagleHacks 2026 **
+**EagleHacks 2026**
 
 ## Project summary
 
