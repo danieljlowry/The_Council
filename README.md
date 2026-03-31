@@ -1,6 +1,6 @@
 # Prompt Odyssey
 
-**EagleHacks 2026 — MVP**
+**EagleHacks 2026 **
 
 ## Project summary
 
